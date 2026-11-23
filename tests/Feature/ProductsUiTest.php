@@ -32,7 +32,14 @@ class ProductsUiTest extends TestCase
         $prod->photo = $origPhoto;
         $prod->save();
         @unlink(storage_path('app/public/products/uji-thumb.jpg'));
-        $this->assertStringContainsString('bg-secondary-lt">nonaktif', $html);
+        // badge nonaktif netral: nonaktifkan satu produk sementara
+        $wasActive = (int) $prod->is_active;
+        $prod->is_active = false;
+        $prod->save();
+        $html3 = $me->get('/products')->assertStatus(200)->getContent();
+        $this->assertStringContainsString('bg-secondary-lt">nonaktif', $html3);
+        $prod->is_active = $wasActive;
+        $prod->save();
         $this->assertStringContainsString('dropdown-toggle', $html);
         // tidak ada lagi banner tren master bertele-tele
         $this->assertStringNotContainsString('Pertumbuhan Master', $html);
