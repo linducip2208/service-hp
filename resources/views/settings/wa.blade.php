@@ -37,7 +37,7 @@
 </div>
 <div class="card mt-3"><div class="card-header"><h3 class="card-title">Log 20 terakhir</h3></div>
 <div class="table-responsive"><table class="table card-table"><thead><tr><th>Waktu</th><th>Tujuan</th><th>Status</th><th>Pesan</th><th class="text-end">Aksi</th></tr></thead><tbody>
-@forelse($logs as $l)<tr><td class="text-secondary">{{ $l->created_at?->format('d/m/Y H:i') }}</td><td>{{ $l->phone }}</td><td><span class="badge bg-{{ $l->status=='terkirim'?'green':($l->status=='gagal'?'red':'yellow') }}-lt">{{ $l->status }}</span></td><td class="text-secondary">{{ \Str::limit($l->message,60) }}</td>
+@forelse($logs as $l)<tr><td class="text-secondary">{{ \Carbon\Carbon::parse($l->created_at)->format('d/m/Y H:i') }}</td><td>{{ $l->phone }}</td><td><span class="badge bg-{{ $l->status=='terkirim'?'green':($l->status=='gagal'?'red':'yellow') }}-lt">{{ $l->status }}</span></td><td class="text-secondary">{{ \Str::limit($l->message,60) }}</td>
 <td class="text-end">@if(in_array($l->status,['gagal','antri']))<form method="POST" action="{{ route('settings.wa.retry',$l->id) }}" class="d-inline">@csrf<button class="btn btn-sm btn-outline-warning" title="Kirim ulang via gateway aktif">↻ Kirim ulang</button></form>@else<span class="text-secondary small">—</span>@endif</td></tr>
 @empty<tr><td colspan="5" class="text-center text-secondary">Belum ada log.</td></tr>@endforelse
 </tbody></table></div></div>

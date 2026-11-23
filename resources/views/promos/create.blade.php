@@ -13,14 +13,14 @@
                 Sesuaikan kode, nilai %, dan min. belanja lalu simpan.
             </div>
         @endif
-        <form method="POST" action="{{ route('promos.store') }}">
+        <form method="POST" action="{{ route('promos.store') }}" data-loading>
             @csrf
             <div class="mb-2">
                 <label class="form-label">Toko (kosongkan = semua toko)</label>
                 <select name="store_id" class="form-select">
                     <option value="">— Semua toko —</option>
                     @foreach ($stores as $s)
-                        <option value="{{ $s->id }}">{{ $s->name }}</option>
+                        <option value="{{ $s->id }}" {{ (string)old('store_id')===(string)$s->id?'selected':'' }}>{{ $s->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -178,19 +178,19 @@
             <div class="row">
                 <div class="col-4 mb-2">
                     <label class="form-label">Mulai</label>
-                    <input type="date" name="start_date" class="form-control">
+                    <input type="date" name="start_date" value="{{ old('start_date') }}" class="form-control">
                 </div>
                 <div class="col-4 mb-2">
                     <label class="form-label">Berakhir</label>
-                    <input type="date" name="end_date" class="form-control">
+                    <input type="date" name="end_date" value="{{ old('end_date') }}" class="form-control">
                 </div>
                 <div class="col-4 mb-2">
                     <label class="form-label">Quota (0 = tanpa batas)</label>
-                    <input type="number" name="quota" class="form-control" min="0" value="0">
+                    <input type="number" name="quota" class="form-control" min="0" value="{{ old('quota', 0) }}">
                 </div>
             </div>
             <label class="form-check">
-                <input type="checkbox" name="is_active" value="1" class="form-check-input" checked>
+                <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', true)?'checked':'' }}>
                 <span class="form-check-label">Aktif</span>
             </label>
             <div class="mt-2">
