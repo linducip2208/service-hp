@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Share daftar toko ke layout (store switcher), toleran jika tabel belum ada
+        // Share daftar toko + navigasi sidebar ke layout, toleran jika tabel belum ada
         view()->composer('layouts.tabler', function ($view) {
             try {
                 if (\Schema::hasTable('stores')) {
@@ -29,6 +29,17 @@ class AppServiceProvider extends ServiceProvider
                 }
             } catch (\Throwable $e) {
                 $view->with('allStores', collect());
+            }
+            try {
+                $role = auth()->user()->role ?? null;
+                $storeId = session('active_store_id') ?? auth()->user()->active_store_id ?? null;
+                $view->with('navGroups', \App\Support\NavMenu::forRole($role));
+                $view->with('navBadges', \App\Support\NavMenu::badges($storeId ? (int) $storeId : null));
+                $view->with('navRoute', request()->route()?->getName());
+            } catch (\Throwable $e) {
+                $view->with('navGroups', []);
+                $view->with('navBadges', []);
+                $view->with('navRoute', null);
             }
         });
     }

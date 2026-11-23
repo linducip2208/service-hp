@@ -47,89 +47,46 @@
 </head>
 <body>
 <div class="page">
-  {{-- Header corporate --}}
-  <header class="navbar navbar-expand-md d-print-none no-print corporate-bar">
+  @include('layouts.sidebar')
+  {{-- Topbar --}}
+  <header class="navbar navbar-expand-md d-print-none no-print corporate-topbar">
     <div class="container-xl">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+      <button type="button" id="sidebar-mini-toggle" class="btn btn-icon btn-ghost-secondary d-none d-lg-inline-flex me-1" title="Rampingkan sidebar" aria-label="Rampingkan sidebar">
+        <i class="ti ti-layout-sidebar-left-collapse" style="font-size:18px"></i>
+      </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-label="Menu">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-        <a href="{{ route('dashboard') }}" class="text-decoration-none d-flex align-items-center gap-2"><span class="corp-brandmark">S</span><span><span class="corp-brandname">ServiceHP</span><br><span class="corp-storename">POS · Inventory · Service Center</span></span></a>
-        @if(session('active_store_id') && isset($allStores))
-          <span class="badge bg-blue-lt ms-2">{{ optional($allStores->firstWhere('id', session('active_store_id')))->name ?? 'Toko' }}</span>
-        @endif
-      </h1>
-      {{-- Pencarian global (desktop): GET /search?q= — hasil dikelompokkan, limit 5/kelompok. Shortcut "/" fokus ke sini. --}}
-      <form
-        method="GET"
-        action="{{ route('search') }}"
-        class="d-none d-md-flex ms-2 me-auto"
-        role="search"
-      >
-        <div
-          class="input-icon"
-        >
-          <span
-            class="input-icon-addon"
-          >
-            <i
-              class="ti ti-search"
-            ></i>
-          </span>
-          <input
-            type="text"
-            name="q"
-            value="{{ request('q') }}"
-            class="form-control form-control-sm js-global-search"
-            id="global-search-desktop"
-            placeholder="Cari invoice / tiket / IMEI / pelanggan / produk…  ( tekan / )"
-            autocomplete="off"
-          />
+      @if(isset($allStores) && $allStores->count())
+      <form method="POST" action="#" class="nav-item me-2 d-flex align-items-center" onsubmit="return false" title="Toko aktif">
+        <select class="form-select form-select-sm" style="max-width:180px" onchange="fetch('{{ url('/store') }}/'+this.value,{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(()=>location.reload())" aria-label="Toko aktif">
+          @foreach($allStores as $s)
+            <option value="{{ $s->id }}" {{ session('active_store_id')==$s->id?'selected':'' }}>{{ $s->name }}</option>
+          @endforeach
+        </select>
+      </form>
+      @endif
+      <form method="GET" action="{{ route('search') }}" class="d-flex ms-0 me-auto flex-fill" role="search" style="max-width:560px">
+        <div class="input-icon w-100">
+          <span class="input-icon-addon"><i class="ti ti-search"></i></span>
+          <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-sm js-global-search" id="global-search-top" placeholder="Cari invoice / tiket / IMEI / pelanggan / produk…  ( / atau Ctrl+K )" autocomplete="off">
         </div>
       </form>
       <div class="navbar-nav flex-row order-md-last">
-        {{-- Lonceng notifikasi live: badge = siap_diambil + overdue + booking menunggu.
-          Polling ringan via GET /notifications/count tiap 60 dtk (lihat @stack js di bawah).
-          Sengaja tanpa bunyi agar tidak mengganggu kasir/teknisi di toko yang ramai. --}}
-        <div
-          class="nav-item me-2 d-flex align-items-center"
-        >
-          <a
-            href="{{ route('dashboard') }}"
-            id="notif-bell"
-            class="btn btn-icon btn-ghost-secondary position-relative"
-            title="Notifikasi: tiket siap diambil, tiket terlambat, booking menunggu"
-            aria-label="Notifikasi"
-          >
+        <div class="nav-item me-1 d-flex align-items-center">
+          <a href="{{ route('dashboard') }}" id="notif-bell" class="btn btn-icon btn-ghost-secondary position-relative" title="Notifikasi: tiket siap diambil, tiket terlambat, booking menunggu" aria-label="Notifikasi">
             <span aria-hidden="true"><i class="ti ti-bell" style="font-size:18px"></i></span>
-            <span
-              id="notif-badge"
-              class="badge bg-red position-absolute top-0 start-100 translate-middle"
-              style="display:none"
-            >
-              0
-            </span>
+            <span id="notif-badge" class="badge bg-red position-absolute top-0 start-100 translate-middle" style="display:none">0</span>
           </a>
         </div>
-        {{-- Toggle gelap/terang --}}
-        <div class="nav-item me-2 d-flex align-items-center">
+        <div class="nav-item me-1 d-flex align-items-center">
           <button type="button" id="theme-toggle" class="btn btn-icon btn-ghost-secondary" title="Mode gelap/terang" aria-label="Mode gelap/terang">
             <span id="theme-icon"><i class="ti ti-moon" style="font-size:18px"></i></span>
           </button>
         </div>
-        {{-- Store switcher --}}
-        @if(isset($allStores) && $allStores->count())
-        <form method="POST" action="#" class="nav-item me-2 d-flex align-items-center" onsubmit="return false">
-          <select class="form-select form-select-sm" onchange="fetch('{{ url('/store') }}/'+this.value,{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(()=>location.reload())">
-            @foreach($allStores as $s)
-              <option value="{{ $s->id }}" {{ session('active_store_id')==$s->id?'selected':'' }}>{{ $s->name }}</option>
-            @endforeach
-          </select>
-        </form>
-        @endif
         <div class="nav-item dropdown">
           <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown">
-            <span class="avatar avatar-sm">{{ strtoupper(substr(auth()->user()->name ?? 'A',0,1)) }}</span>
+            <span class="avatar avatar-sm">{{ strtoupper(mb_substr(auth()->user()->name ?? 'A', 0, 1)) }}</span>
             <div class="d-none d-xl-block ps-2">
               <div>{{ auth()->user()->name ?? '' }}</div>
               <div class="mt-1 small text-secondary">{{ auth()->user()->role ?? '' }}</div>
@@ -144,113 +101,8 @@
           </div>
         </div>
       </div>
-      <div class="collapse navbar-collapse" id="navbar-menu">
-        <ul class="navbar-nav">
-          {{-- Pencarian global (mobile): tampil hanya di menu collapse --}}
-          <li class="nav-item d-md-none w-100">
-            <form
-              method="GET"
-              action="{{ route('search') }}"
-              class="px-3 py-2"
-              role="search"
-            >
-              <div
-                class="input-icon"
-              >
-                <span
-                  class="input-icon-addon"
-                >
-                  <i
-                    class="ti ti-search"
-                  ></i>
-                </span>
-                <input
-                  type="text"
-                  name="q"
-                  value="{{ request('q') }}"
-                  class="form-control js-global-search"
-                  id="global-search-mobile"
-                  placeholder="Cari invoice / tiket / IMEI / pelanggan / produk…  ( tekan / )"
-                  autocomplete="off"
-                />
-              </div>
-            </form>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}"><i class="ti ti-dashboard me-1"></i>Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ route('activity') }}"><i class="ti ti-history me-1"></i>Aktivitas</a></li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="ti ti-shopping-cart me-1"></i>Penjualan</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{ route('pos.index') }}">POS / Kasir</a>
-              <a class="dropdown-item" href="{{ route('sales.index') }}">Riwayat Transaksi</a>
-              <a class="dropdown-item" href="{{ route('returns.index') }}">Retur & Refund</a>
-              <a class="dropdown-item" href="{{ route('tradeins.index') }}">Tukar Tambah</a>
-              <a class="dropdown-item" href="{{ route('secondhand.index') }}">Beli HP Bekas</a>
-              <a class="dropdown-item" href="{{ route('consignments.index') }}">Konsinyasi</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="ti ti-device-mobile me-1"></i>Inventory</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{ route('products.index') }}">Produk & HP</a>
-              <a class="dropdown-item" href="{{ route('units.index') }}">Unit / IMEI</a>
-              <a class="dropdown-item" href="{{ route('stocks.opname') }}">Stok Opname</a>
-              <a class="dropdown-item" href="{{ route('stocks.mutations') }}">Mutasi & Transfer</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="ti ti-tool me-1"></i>Service</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{ route('services.index') }}">Tiket Service</a>
-              <a class="dropdown-item" href="{{ route('services.report') }}">Laporan Service</a>
-              <a class="dropdown-item" href="{{ route('services.create') }}">Terima HP Baru</a>
-              <a class="dropdown-item" href="{{ route('bookings.index') }}">Booking Online</a>
-              <a class="dropdown-item" href="{{ route('technicians.index') }}">Teknisi & Komisi</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="ti ti-wallet me-1"></i>Keuangan</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{ route('cash.index') }}">Kas Masuk/Keluar</a>
-              <a class="dropdown-item" href="{{ route('expenses.index') }}">Pengeluaran</a>
-              <a class="dropdown-item" href="{{ route('debts.index') }}">Hutang & Piutang</a>
-              <a class="dropdown-item" href="{{ route('reports.profit') }}">Laba Rugi</a>
-              <a class="dropdown-item" href="{{ route('purchases.index') }}">Pembelian Supplier</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="ti ti-settings me-1"></i>Master</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{ route('stores.index') }}">Toko / Cabang</a>
-              @if(in_array(auth()->user()->role ?? '', ['superadmin','owner']))
-              <a class="dropdown-item" href="{{ route('stores.monitor') }}"><i class="ti ti-building me-1"></i>Monitoring Pusat</a>
-              @endif
-              <a class="dropdown-item" href="{{ route('customers.index') }}">Pelanggan (CRM)</a>
-              <a class="dropdown-item" href="{{ route('suppliers.index') }}">Supplier</a>
-              <a class="dropdown-item" href="{{ route('brands.index') }}">Merek</a>
-              <a class="dropdown-item" href="{{ route('categories.index') }}">Kategori</a>
-              <a class="dropdown-item" href="{{ route('promos.index') }}">Promo & Voucher</a>
-              <a class="dropdown-item" href="{{ route('reminders.index') }}">
-                <i class="ti ti-bell me-1"></i>Pengingat
-              </a>
-              <a class="dropdown-item" href="{{ route('users.index') }}">Pengguna</a>
-              <a class="dropdown-item" href="{{ route('settings.printers') }}"><i class="ti ti-printer me-1"></i>Printer & Cetak</a>
-              <a class="dropdown-item" href="{{ route('backup.index') }}"><i class="ti ti-database me-1"></i>Backup Data</a>
-              @if(in_array(auth()->user()->role ?? '', ['superadmin','owner']))
-              <a class="dropdown-item" href="{{ route('storage.index') }}"><i class="ti ti-folder me-1"></i>File Yatim (Storage)</a>
-              @endif
-              @if(in_array(auth()->user()->role ?? '', ['superadmin','owner','admin']))
-              <a class="dropdown-item" href="{{ route('settings.wa') }}">WhatsApp</a>
-              @endif
-            </div>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="{{ route('track.form') }}" target="_blank"><i class="ti ti-search me-1"></i>Lacak Service</a></li>
-          <li class="nav-item d-print-none"><a class="nav-link" href="{{ route('help') }}"><i class="ti ti-help me-1"></i>Bantuan</a></li>
-        </ul>
-      </div>
     </div>
   </header>
-
   <div class="page-wrapper">
     <div class="page-body">
       <div class="container-xl">
@@ -476,6 +328,133 @@ function printStruk(elId){ const el=document.getElementById(elId); if(!el) retur
   })();
 </script>
 <button type="button" id="pwa-install-btn" class="btn btn-primary no-print" style="display:none;position:fixed;left:16px;bottom:16px;z-index:1070;border-radius:999px;padding:.7rem 1.1rem;box-shadow:0 8px 24px rgba(15,95,208,.45)"><i class="ti ti-device-mobile me-1"></i>Install Aplikasi</button>
+<script>
+/* Sidebar: cari menu, favorit, terakhir dibuka, mini-mode, ingat grup terbuka, Ctrl+K. */
+(function(){
+  var FAV='shp_nav_fav', REC='shp_nav_rec', OPEN='shp_nav_open', MINI='shp_sidebar_mini';
+  function read(k, fb){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?fb:v; }catch(e){ return fb; } }
+  function write(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  document.addEventListener('DOMContentLoaded', function(){
+    var nav = document.getElementById('side-nav');
+    if(!nav) return;
+    /* Mini mode */
+    if(read(MINI, false)) document.body.classList.add('sidebar-mini');
+    var miniBtn = document.getElementById('sidebar-mini-toggle');
+    if(miniBtn) miniBtn.addEventListener('click', function(){
+      var on = document.body.classList.toggle('sidebar-mini');
+      write(MINI, on);
+    });
+    /* Grup terbuka tersimpan */
+    var open = read(OPEN, []);
+    if(open.length){
+      nav.querySelectorAll('.side-group').forEach(function(g){
+        var name = g.getAttribute('data-group');
+        if(open.indexOf(name) >= 0){
+          var menu = g.querySelector('.dropdown-menu');
+          var link = g.querySelector('.dropdown-toggle');
+          if(menu) menu.classList.add('show');
+          if(link) link.setAttribute('aria-expanded','true');
+        }
+      });
+    }
+    nav.querySelectorAll('.side-group > .dropdown-toggle').forEach(function(link){
+      link.addEventListener('click', function(){
+        var g = link.closest('.side-group');
+        var name = g ? g.getAttribute('data-group') : '';
+        setTimeout(function(){
+          var menu = g ? g.querySelector('.dropdown-menu') : null;
+          var isOpen = menu && menu.classList.contains('show');
+          var cur = read(OPEN, []);
+          if(isOpen && cur.indexOf(name) < 0){ cur.push(name); write(OPEN, cur); }
+          if(!isOpen){ write(OPEN, cur.filter(function(x){ return x !== name; })); }
+        }, 50);
+      });
+    });
+    /* Favorit */
+    function paintFav(){
+      var favs = read(FAV, []);
+      nav.querySelectorAll('.side-fav').forEach(function(btn){
+        btn.classList.toggle('on', favs.indexOf(btn.getAttribute('data-route')) >= 0);
+      });
+      var box = document.getElementById('nav-favorites');
+      var list = document.getElementById('nav-favorites-list');
+      if(!box || !list) return;
+      list.innerHTML = '';
+      var shown = 0;
+      nav.querySelectorAll('.side-group .side-item > a.dropdown-item').forEach(function(a){
+        if(favs.indexOf(a.getAttribute('data-route')) < 0) return;
+        shown++;
+        var c = a.cloneNode(true);
+        c.classList.remove('active');
+        list.appendChild(c);
+      });
+      box.style.display = shown ? '' : 'none';
+    }
+    nav.addEventListener('click', function(e){
+      var btn = e.target.closest('.side-fav');
+      if(btn){
+        e.preventDefault(); e.stopPropagation();
+        var r = btn.getAttribute('data-route');
+        var favs = read(FAV, []);
+        var i = favs.indexOf(r);
+        if(i >= 0) favs.splice(i, 1); else favs.push(r);
+        write(FAV, favs); paintFav(); return;
+      }
+      var a = e.target.closest('a.dropdown-item[href]');
+      if(a && a.getAttribute('data-route')){
+        var recs = read(REC, []).filter(function(x){ return x.route !== a.getAttribute('data-route'); });
+        recs.unshift({route: a.getAttribute('data-route'), title: a.getAttribute('data-title') || a.textContent.trim(), url: a.getAttribute('href')});
+        write(REC, recs.slice(0, 5)); paintRec();
+      }
+    });
+    function paintRec(){
+      var recs = read(REC, []);
+      var box = document.getElementById('nav-recents');
+      var list = document.getElementById('nav-recents-list');
+      if(!box || !list) return;
+      list.innerHTML = '';
+      recs.forEach(function(r){
+        var a = document.createElement('a');
+        a.className = 'dropdown-item'; a.href = r.url;
+        a.innerHTML = '<i class="ti ti-history me-1"></i><span class="sidebar-label"></span>';
+        a.querySelector('span').textContent = r.title;
+        list.appendChild(a);
+      });
+      box.style.display = recs.length ? '' : 'none';
+    }
+    paintFav(); paintRec();
+    /* Cari menu */
+    var q = document.getElementById('menu-search');
+    if(q) q.addEventListener('input', function(){
+      var needle = q.value.trim().toLowerCase();
+      nav.querySelectorAll('.side-group').forEach(function(g){
+        var hits = 0;
+        g.querySelectorAll('.side-item').forEach(function(it){
+          var ok = !needle || (it.getAttribute('data-label') || '').indexOf(needle) >= 0;
+          it.style.display = ok ? '' : 'none';
+          if(ok) hits++;
+        });
+        g.style.display = (!needle || hits) ? '' : 'none';
+        var menu = g.querySelector('.dropdown-menu');
+        if(menu && needle && hits) menu.classList.add('show');
+      });
+      ['nav-favorites','nav-recents'].forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) el.style.display = needle ? 'none' : el.style.display;
+      });
+    });
+  });
+  /* Ctrl+K / Cmd+K fokus ke pencarian global (slash tetap didukung kode lama). */
+  document.addEventListener('keydown', function(e){
+    if((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')){
+      var box = document.getElementById('global-search-top') || document.querySelector('.js-global-search');
+      if(!box) return;
+      e.preventDefault();
+      box.focus(); if(box.select){ try{ box.select(); }catch(err){} }
+    }
+  });
+})();
+</script>
 @stack('js')
 <script>
 /* Prompt install PWA (Android/Chrome): tampilkan tombol hanya bila browser mengizinkan. */

@@ -9,81 +9,67 @@
     @endif
 </h2>
 </div>
-<div class="col-auto d-flex gap-2 flex-wrap">
+<div class="col-auto d-flex gap-2 flex-wrap align-items-center">
+<a href="{{ route('products.create') }}" class="btn btn-primary"><i class="ti ti-plus me-1"></i>Produk</a>
 @if(in_array(auth()->user()->role ?? '', ['superadmin', 'owner']))
     @if(!empty($showAll))
-        <a href="{{ route('products.index', array_merge(request()->except('all'), [])) }}" class="btn btn-purple"><i class="ti ti-building-store me-1"></i> Toko aktif saja</a>
+        <a href="{{ route('products.index', array_merge(request()->except('all'), [])) }}" class="btn btn-outline-secondary btn-sm"><i class="ti ti-building-store me-1"></i> Toko aktif saja</a>
     @else
-        <a href="{{ route('products.index', array_merge(request()->query(), ['all' => 1])) }}" class="btn btn-outline-purple"><i class="ti ti-building me-1"></i> Semua toko</a>
+        <a href="{{ route('products.index', array_merge(request()->query(), ['all' => 1])) }}" class="btn btn-outline-secondary btn-sm"><i class="ti ti-building me-1"></i> Semua toko</a>
     @endif
 @endif
-<a href="{{ route('stocks.valuation') }}" class="btn btn-outline-success"><i class="ti ti-cash me-1"></i> Nilai Stok</a>
-        <a href="{{ route('stocks.deadstock') }}" class="btn btn-outline-danger"><i class="ti ti-snowflake me-1"></i> Stok Mati</a>
-        <a href="{{ route('products.bulk') }}" class="btn btn-outline-primary"><i class="ti ti-currency-dollar me-1"></i> Harga Massal</a>
-        <a href="{{ route('products.reorder') }}" class="btn btn-outline-warning"><i class="ti ti-shopping-cart me-1"></i> Saran Belanja</a>
-        <a href="{{ route('products.export') }}" class="btn btn-outline-secondary">Export CSV</a>
-        <button
-            type="button"
-            id="printLabelsBtn"
-            class="btn btn-outline-dark"
-        >
-            <i class="ti ti-printer me-1"></i> Label Terpilih (<span id="labelCount">0</span>)
-        </button>
-        <button
-            type="button"
-            id="printCatalogBtn"
-            class="btn btn-outline-dark"
-            title="Cetak katalog harga (produk aktif, filter & halaman ini)"
-        >
-            <i class="ti ti-book me-1"></i> Katalog Harga
-        </button>
-        <a href="{{ route('products.create') }}" class="btn btn-primary">+ Produk</a></div></div></div>
+<div class="dropdown">
+    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-tool me-1"></i>Alat & Laporan</button>
+    <div class="dropdown-menu dropdown-menu-end">
+        <a href="{{ route('stocks.valuation') }}" class="dropdown-item"><i class="ti ti-cash me-1"></i> Nilai Stok</a>
+        <a href="{{ route('stocks.deadstock') }}" class="dropdown-item"><i class="ti ti-snowflake me-1"></i> Stok Mati</a>
+        <a href="{{ route('products.bulk') }}" class="dropdown-item"><i class="ti ti-currency-dollar me-1"></i> Harga Massal</a>
+        <a href="{{ route('products.reorder') }}" class="dropdown-item"><i class="ti ti-shopping-cart me-1"></i> Saran Belanja</a>
+        <a href="{{ route('products.export') }}" class="dropdown-item"><i class="ti ti-download me-1"></i> Export CSV</a>
+        <button type="button" id="printLabelsBtn" class="dropdown-item"><i class="ti ti-printer me-1"></i> Label Terpilih (<span id="labelCount">0</span>)</button>
+        <button type="button" id="printCatalogBtn" class="dropdown-item" title="Cetak katalog harga (produk aktif, filter & halaman ini)"><i class="ti ti-book me-1"></i> Katalog Harga</button>
+    </div>
+</div>
+</div></div></div>
 @if(($lowSpareparts ?? collect())->count())
-<div
-    class="alert alert-danger"
->
-    <strong>
-        Sparepart menipis ({{ $lowSpareparts->count() }}):
-    </strong>
+<details class="alert alert-danger py-2">
+    <summary>
+        <strong>Sparepart menipis ({{ $lowSpareparts->count() }})</strong>
+        <span class="text-secondary small">— klik untuk rincian</span>
+    </summary>
+    <div class="mt-2">
     @foreach($lowSpareparts as $lp)
         <span class="badge bg-red-lt mt-1 me-1">
             {{ $lp->name }} — stok {{ $lp->stock_total ?? 0 }}/min {{ $lp->min_stock }}
         </span>
     @endforeach
-</div>
+    </div>
+</details>
 @endif
-<div class="alert alert-info">
-    <i class="ti ti-trending-up me-1"></i> Tren penambahan master 12 bulan terakhir (pelanggan baru + produk baru)
-    ada di kartu
-    <a href="{{ route('customers.index') }}#pertumbuhan-master">
-        Pertumbuhan Master
-    </a>
-    halaman Pelanggan (produk dihitung global, tanpa scope toko).
-</div>
 @if(($lossCount ?? 0) > 0)
-<div
-    class="alert alert-danger border-danger"
->
-    <div class="d-flex flex-wrap align-items-center gap-2">
+<details class="alert alert-warning py-2" {{ request()->boolean('rugi') ? 'open' : '' }}>
+    <summary>
         <strong>
-            <i class="ti ti-alert-triangle me-1"></i> Jual rugi: {{ $lossCount }} produk aktif harga jual &lt; harga beli (global, semua toko tak relevan untuk master)
+            <i class="ti ti-alert-triangle me-1"></i> Jual rugi: {{ $lossCount }} produk (jual &lt; beli)
         </strong>
         @if(request()->boolean('rugi'))
             <a
                 href="{{ route('products.index', array_merge(request()->except('rugi'), [])) }}"
-                class="btn btn-sm btn-outline-secondary"
+                class="btn btn-sm btn-outline-secondary ms-2"
+                onclick="event.stopPropagation()"
             >
                 Tampilkan semua
             </a>
         @else
             <a
                 href="{{ route('products.index', array_merge(request()->query(), ['rugi' => 1])) }}"
-                class="btn btn-sm btn-danger"
+                class="btn btn-sm btn-danger ms-2"
+                onclick="event.stopPropagation()"
             >
                 Filter hanya jual rugi
             </a>
         @endif
-    </div>
+    </summary>
     <div class="mt-2">
         @foreach(($lossProducts ?? collect()) as $lp)
             <a
@@ -96,17 +82,21 @@
         @endforeach
         @if(($lossCount ?? 0) > ($lossProducts ?? collect())->count())
             <span class="text-secondary small">
-                …dan {{ $lossCount - ($lossProducts ?? collect())->count() }} lainnya. Klik "Filter hanya jual rugi" untuk daftar penuh (paginasi).
+                …dan {{ $lossCount - ($lossProducts ?? collect())->count() }} lainnya.
             </span>
         @endif
     </div>
-</div>
+</details>
 @endif
 @if(session('import_fail'))
 <div class="alert alert-warning"><strong>Rincian baris gagal ({{ count(session('import_fail')) }}):</strong><ul class="mb-0">@foreach(session('import_fail') as $f)<li>{{ $f }}</li>@endforeach</ul></div>
 @endif
-<div class="card mb-3">
-    <div class="card-body">
+<details class="card mb-3">
+    <summary class="card-body py-2" style="cursor:pointer;list-style:none">
+        <i class="ti ti-upload me-1"></i><strong>Import CSV produk</strong>
+        <span class="text-secondary small">(sku,nama,type,brand,category,harga_beli,harga_jual,min_stock)</span>
+    </summary>
+    <div class="card-body border-top">
         <form
             method="POST"
             action="{{ route('products.import') }}"
@@ -141,22 +131,22 @@
                     href="{{ route('products.template') }}"
                     class="btn btn-outline-success w-100"
                 >
-                    <i class="ti ti-download me-1"></i> Unduh Template
+                    <i class="ti ti-download me-1"></i> Template
                 </a>
             </div>
         </form>
     </div>
-</div>
-<div class="card mb-3"><div class="card-body"><form method="GET" class="row g-2">
+</details>
+<div class="card mb-3"><div class="card-body py-2"><form method="GET" class="row g-2 align-items-end">
 @if(!empty($showAll))
     <input type="hidden" name="all" value="1">
 @endif
 <div class="col-md-4"><input name="q" value="{{ request('q') }}" class="form-control" placeholder="Nama / SKU / barcode…"></div>
-<div class="col-md-3"><select name="type" class="form-select"><option value="">Semua tipe</option>
+<div class="col-md-2"><select name="type" class="form-select"><option value="">Semua tipe</option>
 @foreach(['hp_baru','hp_bekas','refurbished','aksesoris','sparepart','pulsa','paket_data','lain'] as $t)<option value="{{ $t }}" {{ request('type')===$t?'selected':'' }}>{{ $t }}</option>@endforeach</select></div>
-<div class="col-md-3"><select name="brand_id" class="form-select"><option value="">Semua merek</option>@foreach($brands as $b)<option value="{{ $b->id }}" {{ (string)request('brand_id')===(string)$b->id?'selected':'' }}>{{ $b->name }}</option>@endforeach</select></div>
+<div class="col-md-2"><select name="brand_id" class="form-select"><option value="">Semua merek</option>@foreach($brands as $b)<option value="{{ $b->id }}" {{ (string)request('brand_id')===(string)$b->id?'selected':'' }}>{{ $b->name }}</option>@endforeach</select></div>
 <div class="col-md-2"><select name="category_id" class="form-select"><option value="">Semua kategori</option>@foreach(($categories ?? []) as $c)<option value="{{ $c->id }}" {{ (string)request('category_id')===(string)$c->id?'selected':'' }}>{{ $c->name }}</option>@endforeach</select></div>
-<div class="col-md-2"><button class="btn btn-secondary w-100">Filter</button></div>
+<div class="col-md-2"><button class="btn btn-primary w-100"><i class="ti ti-filter me-1"></i>Filter</button></div>
 <div class="col-md-12 d-flex flex-wrap gap-2 align-items-center">
     <a
         href="{{ route('products.index', array_merge(request()->query(), ['export' => 'csv'])) }}"
@@ -215,6 +205,7 @@
     >
 </th>
 <th>SKU</th>
+<th></th>
 <th>Produk</th>
 <th>Tipe</th>
 <th class="text-end">Beli</th>
@@ -240,6 +231,13 @@
             >
         </td>
 <td class="font-monospace small">{{ $p->sku }}</td>
+<td style="width:44px">
+    @if($p->photo)
+        <img src="{{ asset('storage/'.$p->photo) }}" alt="" loading="lazy" class="rounded" style="width:40px;height:40px;object-fit:cover">
+    @else
+        <span class="avatar avatar-sm bg-secondary-lt"><i class="ti ti-package"></i></span>
+    @endif
+</td>
 <td>
     {{ $p->name }}
     <div class="small text-secondary">
@@ -248,7 +246,7 @@
             <span class="badge bg-blue-lt">IMEI</span>
         @endif
         @unless($p->is_active)
-            <span class="badge bg-red-lt">nonaktif</span>
+            <span class="badge bg-secondary-lt">nonaktif</span>
         @endunless
     </div>
 </td>
@@ -279,27 +277,29 @@
         @endforelse
     </td>
 @endif
-<td class="text-nowrap">
+<td class="text-end text-nowrap">
     <a href="{{ route('products.show',$p) }}" class="btn btn-sm btn-outline-primary">Detail</a>
-    <a href="{{ route('products.edit',$p) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-    @if(in_array(auth()->user()->role ?? '', ['superadmin', 'owner', 'admin', 'gudang']))
-        <form
-            method="POST"
-            action="{{ route('products.duplicate', $p) }}"
-            class="d-inline"
-            onsubmit="return confirm('Duplikat {{ $p->name }}? SKU baru + -COPY, stok mulai 0 & nonaktif.')"
-        >
-            @csrf
-            <button class="btn btn-sm btn-outline-warning">
-                Duplikat
-            </button>
-        </form>
-    @endif
+    <div class="dropdown d-inline">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Aksi lainnya">Aksi</button>
+        <div class="dropdown-menu dropdown-menu-end">
+            <a href="{{ route('products.edit',$p) }}" class="dropdown-item"><i class="ti ti-edit me-1"></i>Edit</a>
+            @if(in_array(auth()->user()->role ?? '', ['superadmin', 'owner', 'admin', 'gudang']))
+                <form
+                    method="POST"
+                    action="{{ route('products.duplicate', $p) }}"
+                    onsubmit="return confirm('Duplikat {{ $p->name }}? SKU baru + -COPY, stok mulai 0 & nonaktif.')"
+                >
+                    @csrf
+                    <button class="dropdown-item"><i class="ti ti-copy me-1"></i>Duplikat</button>
+                </form>
+            @endif
+        </div>
+    </div>
 </td>
 </tr>
 @empty
     <tr>
-    <td colspan="{{ !empty($showAll) ? 9 : 8 }}">
+    <td colspan="{{ !empty($showAll) ? 10 : 9 }}">
     <div class="empty py-3"><div class="empty-icon"><i class="ti ti-package fs-1 text-secondary"></i></div><p class="empty-title">Belum ada produk</p><p class="empty-subtitle text-secondary">Tambahkan produk manual atau import massal via CSV di atas.</p><div class="empty-action"><a href="{{ route('products.create') }}" class="btn btn-primary"><i class="ti ti-plus me-1"></i>Tambah Produk</a></div></div>
     </td>
     </tr>
