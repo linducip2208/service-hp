@@ -46,7 +46,7 @@ class WorkflowGatesTest extends TestCase
         $this->owner()->post('/pos', $payload)->assertStatus(302);
         $sale = Sale::orderByDesc('id')->first();
         $this->owner()->delete('/sales/' . $sale->id)->assertStatus(302);
-        $p->update(['is_active' => false]);
+        $p->delete(); // bersih total via model (cascade stok/mutasi)
     }
 
     public function test_kasir_ditolak_diskon_manual_lebih_30_persen(): void
@@ -58,7 +58,7 @@ class WorkflowGatesTest extends TestCase
             'discount' => 50000, 'trade_in_value' => 0, 'installment_tenor' => 0,
             'payment_method' => 'tunai', 'paid_amount' => 30000,
         ])->assertStatus(422);
-        $p->update(['is_active' => false]);
+        $p->delete(); // bersih total via model (cascade stok/mutasi)
     }
 
     public function test_pengeluaran_besar_wajib_bukti_dan_kunci_periode_menolak_backdate(): void
@@ -117,7 +117,7 @@ class WorkflowGatesTest extends TestCase
         ])->assertStatus(422);
         $this->assertEquals(0, \App\Models\SaleReturn::where('sale_id', $sale->id)->count());
         $this->owner()->delete('/sales/' . $sale->id)->assertStatus(302);
-        $p->update(['is_active' => false]);
+        $p->delete(); // bersih total via model (cascade stok/mutasi)
     }
 
     public function test_profit_recalc_kering_tidak_menulis(): void

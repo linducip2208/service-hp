@@ -47,11 +47,11 @@ class PosE2ETest extends TestCase
         // stok berkurang 10 -> 8
         $this->assertEquals(8, (int) \App\Models\ProductStock::where('product_id', $p->id)->where('store_id', 1)->sum('qty'));
 
-        // bersih-bersih: hapus sale (kembalikan stok); produk berriwayat
-        // TIDAK boleh dihapus (aturan bisnis) -> nonaktifkan saja
+        // bersih-bersih total: hapus sale (kembalikan stok), lalu hapus produk uji
+        // via model (riwayat penjualan sudah dihapus di atas; cascade bersihkan stok/mutasi)
         $me->delete('/sales/' . $sale->id)->assertStatus(302);
         $this->assertEquals(10, (int) \App\Models\ProductStock::where('product_id', $p->id)->where('store_id', 1)->sum('qty'));
-        $me->post('/products/bulk', ['ids' => [$p->id], 'mode' => 'status', 'status_value' => 0])->assertStatus(302);
-        $this->assertEquals(0, (int) $p->fresh()->is_active);
+        $p->delete();
+        $this->assertNull(\App\Models\Product::find($p->id));
     }
 }

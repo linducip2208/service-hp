@@ -106,10 +106,19 @@
   <div class="page-wrapper">
     <div class="page-body">
       <div class="container-xl">
-        @if(session('success'))<div class="alert alert-success alert-dismissible no-print"><div class="d-flex"><div>{{ session('success') }}</div></div><a class="btn-close" data-bs-dismiss="alert"></a></div>@endif
-        @if(session('warning'))<div class="alert alert-warning alert-dismissible no-print"><div class="d-flex"><div>{{ session('warning') }}</div></div><a class="btn-close" data-bs-dismiss="alert"></a></div>@endif
-        @if(session('error'))<div class="alert alert-danger alert-dismissible no-print"><div>{{ session('error') }}</div><a class="btn-close" data-bs-dismiss="alert"></a></div>@endif
-        @if($errors->any())<div class="alert alert-danger no-print"><ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>@endif
+        <div class="toast-container position-fixed bottom-0 end-0 p-3 d-print-none" style="z-index:1090">
+        @foreach(['success' => 'bg-success text-white', 'warning' => 'bg-warning', 'error' => 'bg-danger text-white'] as $key => $cls)
+            @if(session($key))
+            <div class="toast show align-items-center {{ $cls }} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">{{ session($key) }}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
+                </div>
+            </div>
+            @endif
+        @endforeach
+        </div>
+        @if($errors->any())<div class="alert alert-danger alert-dismissible d-print-none no-print"><div>{{ $errors->first() }}@if($errors->count()>1) <span class="text-secondary">(+{{ $errors->count()-1 }} lainnya)</span>@endif</div><a class="btn-close" data-bs-dismiss="alert"></a></div>@endif
         @yield('content')
       </div>
     </div>
@@ -194,6 +203,14 @@ document.addEventListener('submit', function(e){
   }
 });
 function printStruk(elId){ const el=document.getElementById(elId); if(!el) return window.print(); const w=window.open('','_blank','width=320'); w.document.write('<html><head><title>Struk</title><style>body{font-family:monospace;font-size:12px;width:58mm;background:#fff;color:#000}table{width:100%}hr{border-top:1px dashed #000}</style></head><body>'+el.innerHTML+'</body></html>'); w.document.close(); w.focus(); w.print(); }
+/* Toast otomatis hilang 6 detik (tetap bisa ditutup manual). */
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.toast-container .toast.show').forEach(function(t){
+      setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 300); }, 6000);
+    });
+  });
+})();
 /* Shortcut "/" fokus ke pencarian navbar (abaikan saat mengetik / modal terbuka) */
 (function(){
   function
