@@ -37,13 +37,13 @@ $__noteBersih = trim((string) preg_replace('/\s*\[(?:VOID|UCAPAN|SIG)[^\]]*\]/',
   <div class="row align-items-center">
     <div class="col">
       <div class="page-pretitle">Pusat Cetak • Semua printer didukung</div>
-      <h2 class="page-title">{{ $sale->invoice_no }} @if(!$isGift)<span class="badge bg-green-lt ms-1">Rp {{ number_format($sale->total,0,',','.') }}</span>@else<span class="badge bg-green-lt ms-1">🎁 Struk Hadiah</span>@endif</h2>
+      <h2 class="page-title">{{ $sale->invoice_no }} @if(!$isGift)<span class="badge bg-green-lt ms-1">Rp {{ number_format($sale->total,0,',','.') }}</span>@else<span class="badge bg-green-lt ms-1"><i class="ti ti-gift me-1"></i>Struk Hadiah</span>@endif</h2>
     </div>
     <div class="col-auto ms-auto d-flex gap-1">
       <a href="{{ route('pos.index') }}" class="btn btn-outline-secondary">← POS</a>
       <a href="{{ route('sales.show', $sale) }}" class="btn btn-outline-primary">Detail</a>
       @if(!$isGift)
-      <a href="{{ route('pos.print', [$sale, 'gift' => 1]) }}" class="btn btn-outline-success" target="_blank" title="Buka versi tanpa harga di tab baru">🎁 Struk Hadiah</a>
+      <a href="{{ route('pos.print', [$sale, 'gift' => 1]) }}" class="btn btn-outline-success" target="_blank" title="Buka versi tanpa harga di tab baru"><i class="ti ti-gift me-1"></i>Struk Hadiah</a>
       @else
       <a href="{{ route('pos.print', $sale) }}" class="btn btn-outline-secondary">← Struk Normal</a>
       @endif
@@ -53,7 +53,7 @@ $__noteBersih = trim((string) preg_replace('/\s*\[(?:VOID|UCAPAN|SIG)[^\]]*\]/',
 
 {{-- PANEL CETAK UNIVERSAL --}}
 <div class="card mt-2 d-print-none">
-  <div class="card-header"><h3 class="card-title">🖨️ Pilih cara cetak</h3><span class="card-subtitle ms-2">Berfungsi di semua printer: thermal, inkjet, laser, Bluetooth, USB, WiFi</span></div>
+  <div class="card-header"><h3 class="card-title"><i class="ti ti-printer me-1"></i>Pilih cara cetak</h3><span class="card-subtitle ms-2">Berfungsi di semua printer: thermal, inkjet, laser, Bluetooth, USB, WiFi</span></div>
   <div class="card-body">
     <div class="row row-cards">
       <div class="col-md-4">
@@ -69,7 +69,7 @@ $__noteBersih = trim((string) preg_replace('/\s*\[(?:VOID|UCAPAN|SIG)[^\]]*\]/',
       </div>
       <div class="col-md-4">
         <div class="border rounded p-3 h-100">
-          <div class="fw-bold mb-1">📡 Thermal langsung <span id="bt-badge" class="badge bg-secondary-lt">cek…</span></div>
+          <div class="fw-bold mb-1">Thermal langsung <span id="bt-badge" class="badge bg-secondary-lt">cek…</span></div>
           <div class="text-secondary small mb-2">Bluetooth (HP & PC) / USB (PC Chrome) — tanpa driver, bahasa ESC/POS.</div>
           <div class="d-flex gap-2 mb-2">
             <select id="bt-width" class="form-select form-select-sm" style="max-width:130px"><option value="32">Kertas 58mm</option><option value="48">Kertas 80mm</option></select>
@@ -77,13 +77,13 @@ $__noteBersih = trim((string) preg_replace('/\s*\[(?:VOID|UCAPAN|SIG)[^\]]*\]/',
             <button class="btn btn-sm btn-outline-info" id="btn-usb">USB</button>
           </div>
           <div class="d-flex gap-2 mb-2">
-            <button class="btn btn-sm btn-dark" id="btn-bt-img" title="Cetak tampilan struk apa adanya sebagai gambar (lambat ±10-30 dtk, butuh kertas cukup)">📡 BT Gambar</button>
-            <button class="btn btn-sm btn-outline-dark" id="btn-usb-img" title="Cetak tampilan struk apa adanya sebagai gambar via USB">🔌 USB Gambar</button>
+            <button class="btn btn-sm btn-dark" id="btn-bt-img" title="Cetak tampilan struk apa adanya sebagai gambar (lambat ±10-30 dtk, butuh kertas cukup)"><i class="ti ti-wifi me-1"></i>BT Gambar</button>
+            <button class="btn btn-sm btn-outline-dark" id="btn-usb-img" title="Cetak tampilan struk apa adanya sebagai gambar via USB"><i class="ti ti-plug me-1"></i>USB Gambar</button>
           </div>
           <div class="text-secondary small mb-2">Mode Gambar: mencetak tampilan struk apa adanya (logo & tabel ikut). Lebih lambat ±10–30 dtk & boros kertas — pastikan kertas cukup.</div>
           <div class="d-flex gap-2 mb-2">
-            <button class="btn btn-sm btn-outline-warning" id="btn-drawer-bt" title="Kirim ESC p (1B 70 00 19 FA) via Bluetooth — membuka laci kas RJ11 tanpa cetak struk">🗄️ Buka Laci (BT)</button>
-            <button class="btn btn-sm btn-outline-warning" id="btn-drawer-usb" title="Kirim ESC p (1B 70 00 19 FA) via USB — membuka laci kas RJ11 tanpa cetak struk">🗄️ Buka Laci (USB)</button>
+            <button class="btn btn-sm btn-outline-warning" id="btn-drawer-bt" title="Kirim ESC p (1B 70 00 19 FA) via Bluetooth — membuka laci kas RJ11 tanpa cetak struk"><i class="ti ti-archive me-1"></i>Buka Laci (BT)</button>
+            <button class="btn btn-sm btn-outline-warning" id="btn-drawer-usb" title="Kirim ESC p (1B 70 00 19 FA) via USB — membuka laci kas RJ11 tanpa cetak struk"><i class="ti ti-archive me-1"></i>Buka Laci (USB)</button>
           </div>
           <div class="text-secondary small mb-2">Buka laci kas tanpa cetak struk — laci wajib tersambung ke port RJ11 printer.</div>
           <div id="print-log" class="bg-dark text-green rounded p-2 d-none"></div>
@@ -91,7 +91,7 @@ $__noteBersih = trim((string) preg_replace('/\s*\[(?:VOID|UCAPAN|SIG)[^\]]*\]/',
       </div>
       <div class="col-md-4">
         <div class="border rounded p-3 h-100">
-          <div class="fw-bold mb-1">🌐 Printer WiFi/LAN & Digital</div>
+          <div class="fw-bold mb-1">Printer WiFi/LAN & Digital</div>
           <div class="text-secondary small mb-2">Kirim langsung dari server ke printer jaringan (port 9100), atau simpan sebagai gambar.</div>
           @if(!empty($lanPrinters))
           <div class="d-flex gap-2 mb-2">
@@ -107,17 +107,17 @@ $__noteBersih = trim((string) preg_replace('/\s*\[(?:VOID|UCAPAN|SIG)[^\]]*\]/',
           <div class="btn-list">
             @forelse(($lanPrinters ?? []) as $p)
               <form method="POST" action="{{ route('printers.lan.sale', [$sale, $p['id']]) }}" class="d-inline">@csrf
-                <button class="btn btn-sm btn-outline-success" title="{{ $p['ip'] }}:{{ $p['port'] }}">🌐 {{ $p['name'] }}</button>
+                <button class="btn btn-sm btn-outline-success" title="{{ $p['ip'] }}:{{ $p['port'] }}"><i class="ti ti-wifi me-1"></i>{{ $p['name'] }}</button>
               </form>
             @empty
               <a href="{{ route('settings.printers') }}" class="btn btn-sm btn-outline-secondary">+ Daftarkan printer WiFi</a>
             @endforelse
-            <button class="btn btn-sm btn-outline-dark" id="btn-png">🖼️ PNG / Bagikan</button>
+            <button class="btn btn-sm btn-outline-dark" id="btn-png"><i class="ti ti-photo me-1"></i>PNG / Bagikan</button>
           </div>
           <form method="POST" action="{{ route('printers.wa.sale', $sale) }}" class="d-flex gap-1 mt-2" title="Kirim struk ringkas via WA">
             @csrf
             <input type="text" name="phone" class="form-control form-control-sm" placeholder="No WA cth 0812…" value="{{ $sale->customer->phone ?? '' }}" required>
-            <button class="btn btn-sm btn-success text-nowrap" type="submit">📲 Kirim via WA</button>
+            <button class="btn btn-sm btn-success text-nowrap" type="submit"><i class="ti ti-brand-whatsapp me-1"></i>Kirim via WA</button>
           </form>
         </div>
       </div>

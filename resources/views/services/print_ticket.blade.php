@@ -26,12 +26,12 @@
     <div class="row g-2 align-items-end">
       <div class="col-md-3"><label class="form-label">Lebar thermal</label><select id="bt-width" class="form-select form-select-sm"><option value="32">58mm</option><option value="48">80mm</option></select></div>
       <div class="col-md-9"><div class="btn-list">
-        <button class="btn btn-sm btn-info" id="btn-bt">📡 Bluetooth</button>
+        <button class="btn btn-sm btn-info" id="btn-bt"><i class="ti ti-bluetooth me-1"></i>Bluetooth</button>
         <button class="btn btn-sm btn-outline-info" id="btn-usb">USB</button>
-        <button class="btn btn-sm btn-dark" id="btn-bt-img" title="Cetak tampilan tiket apa adanya sebagai gambar (lambat ±10-30 dtk)">📡 BT Gambar</button>
-        <button class="btn btn-sm btn-outline-dark" id="btn-usb-img" title="Cetak tampilan tiket apa adanya sebagai gambar via USB">🔌 USB Gambar</button>
-        <button class="btn btn-sm btn-outline-warning" id="btn-drawer-bt" title="Kirim ESC p (1B 70 00 19 FA) via Bluetooth — buka laci kas RJ11 tanpa cetak">🗄️ Laci (BT)</button>
-        <button class="btn btn-sm btn-outline-warning" id="btn-drawer-usb" title="Kirim ESC p (1B 70 00 19 FA) via USB — buka laci kas RJ11 tanpa cetak">🗄️ Laci (USB)</button>
+        <button class="btn btn-sm btn-dark" id="btn-bt-img" title="Cetak tampilan tiket apa adanya sebagai gambar (lambat ±10-30 dtk)"><i class="ti ti-wifi me-1"></i>BT Gambar</button>
+        <button class="btn btn-sm btn-outline-dark" id="btn-usb-img" title="Cetak tampilan tiket apa adanya sebagai gambar via USB"><i class="ti ti-plug me-1"></i>USB Gambar</button>
+        <button class="btn btn-sm btn-outline-warning" id="btn-drawer-bt" title="Kirim ESC p (1B 70 00 19 FA) via Bluetooth — buka laci kas RJ11 tanpa cetak"><i class="ti ti-archive me-1"></i>Laci (BT)</button>
+        <button class="btn btn-sm btn-outline-warning" id="btn-drawer-usb" title="Kirim ESC p (1B 70 00 19 FA) via USB — buka laci kas RJ11 tanpa cetak"><i class="ti ti-archive me-1"></i>Laci (USB)</button>
         @if(!empty($lanPrinters))
         <select id="lan-printer" class="form-select form-select-sm d-inline-block" style="max-width:220px">
           @foreach(($lanPrinters ?? []) as $p)
@@ -41,13 +41,13 @@
         <button class="btn btn-sm btn-success" id="btn-lan">Cetak LAN</button>
         @endif
         @foreach(($lanPrinters ?? []) as $p)
-        <form method="POST" action="{{ route('printers.lan.service', [$service->id, $p['id']]) }}" class="d-inline">@csrf<button class="btn btn-sm btn-outline-success">🌐 {{ $p['name'] }}</button></form>
+        <form method="POST" action="{{ route('printers.lan.service', [$service->id, $p['id']]) }}" class="d-inline">@csrf<button class="btn btn-sm btn-outline-success"><i class="ti ti-wifi me-1"></i>{{ $p['name'] }}</button></form>
         @endforeach
-        <button class="btn btn-sm btn-outline-dark" id="btn-png">🖼️ PNG</button>
+        <button class="btn btn-sm btn-outline-dark" id="btn-png"><i class="ti ti-photo me-1"></i>PNG</button>
         <form method="POST" action="{{ route('printers.wa.service', $service) }}" class="d-inline-flex gap-1 align-items-center" title="Kirim tanda terima ringkas via WA">
           @csrf
           <input type="text" name="phone" class="form-control form-control-sm d-inline-block" style="max-width:150px" placeholder="No WA cth 0812…" value="{{ $service->customer->phone ?? '' }}" required>
-          <button class="btn btn-sm btn-success text-nowrap" type="submit">📲 Kirim via WA</button>
+          <button class="btn btn-sm btn-success text-nowrap" type="submit"><i class="ti ti-brand-whatsapp me-1"></i>Kirim via WA</button>
         </form>
       </div>
       @if(!empty($lanPrinters))<div class="form-text mt-1">Dropdown LAN otomatis dipilih sesuai lebar kertas; pilihan tersimpan di HP/kasir ini.</div>@endif</div>

@@ -64,7 +64,7 @@
 <style>.label-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.label-cell{border:1px dashed #aaa;padding:6px;text-align:center}</style>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script>
-const P_NAME = @json($product->name), P_PRICE = @json('Rp ' . number_format($product->selling_price,0,',','.')), P_CODE = @json($product->barcode ?: $product->sku);
+const P_NAME = @json($product->name), P_PRICE = {!! \Illuminate\Support\Js::from('Rp ' . number_format($product->selling_price,0,',','.')) !!}, P_CODE = @json($product->barcode ?: $product->sku);
 function cetakLabel(){
   const n = Math.max(1, Math.min(60, parseInt(document.getElementById('labelQty').value || '9', 10)));
   const grid = document.getElementById('labelGrid'); grid.innerHTML = '';
