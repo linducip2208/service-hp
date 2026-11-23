@@ -98,6 +98,7 @@ class PromoController extends Controller
 
     public function create(Request $request)
     {
+        $this->authorizePromoWrite();
         $stores = Store::where('is_active', true)->orderBy('name')->get();
         // Prefill form via query params (tanpa route/migration baru).
         // Dipakai tombol "Buat Bundling" dari kartu pasangan / halaman promo,
@@ -258,6 +259,7 @@ class PromoController extends Controller
 
     public function edit(Promo $promo)
     {
+        $this->authorizePromoWrite();
         $stores = Store::where('is_active', true)->orderBy('name')->get();
         return view('promos.edit', compact('promo', 'stores'));
     }

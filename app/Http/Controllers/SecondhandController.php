@@ -104,6 +104,7 @@ class SecondhandController extends Controller
     {
         $storeId = (int) session('active_store_id');
         abort_if(!$storeId, 422, 'Toko aktif belum dipilih.');
+        \App\Support\PeriodLock::check($storeId, now()->toDateString(), 'Tanggal pencatatan');
 
         $data = $request->validate([
             'customer_id' => 'nullable|exists:customers,id',

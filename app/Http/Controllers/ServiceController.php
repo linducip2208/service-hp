@@ -69,6 +69,7 @@ class ServiceController extends Controller
     private function recordCash(?int $storeId, string $type, string $category, float $amount, string $refType, int $refId, string $desc): void
     {
         if ($amount <= 0) return;
+        \App\Support\PeriodLock::check($storeId, now()->toDateString(), 'Tanggal kas service');
         $account = CashAccount::where('store_id', $storeId)->where('is_default', true)->first()
             ?? CashAccount::where('store_id', $storeId)->first();
         if (!$account) {

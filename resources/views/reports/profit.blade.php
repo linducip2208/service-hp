@@ -33,13 +33,6 @@
                     <button
                         type="button"
                         class="btn btn-sm btn-outline-primary"
-                        data-preset="week"
-                    >
-                        7 Hari
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-outline-primary"
                         data-preset="month"
                     >
                         Bulan ini

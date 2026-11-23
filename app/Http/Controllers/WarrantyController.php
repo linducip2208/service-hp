@@ -16,6 +16,18 @@ class WarrantyController extends Controller
         return session('active_store_id') ?? auth()->user()->active_store_id ?? null;
     }
 
+    /** Scope toko untuk garansi satuan: via customer.store_id lalu productItem.store_id.
+     *  Superadmin tanpa toko aktif (mode semua-toko) dilewati. */
+    private function authorizeWarranty(Warranty $warranty): void
+    {
+        $storeId = $this->storeId();
+        if (!$storeId) return;
+        $warranty->loadMissing(['customer', 'productItem']);
+        $owner = $warranty->customer->store_id ?? $warranty->productItem->store_id ?? null;
+        if ($owner === null) return;
+        abort_if((int) $owner !== (int) $storeId, 403, 'Bukan garansi toko aktif.');
+    }
+
     public function index(Request $request)
     {
         $storeId = $this->storeId();
@@ -116,6 +128,7 @@ class WarrantyController extends Controller
      */
     public function card(Warranty $warranty)
     {
+        $this->authorizeWarranty($warranty);
         $warranty->load(['customer.store', 'productItem.product', 'productItem.store']);
 
         $ticket = null;
@@ -537,6 +550,7 @@ class WarrantyController extends Controller
 
     public function claim(Request $request, Warranty $warranty)
     {
+        $this->authorizeWarranty($warranty);
         $request->validate([
             'claim_note' => 'nullable|string|max:500',
             'hasil' => 'nullable|in:klaim,selesai',
@@ -569,6 +583,7 @@ class WarrantyController extends Controller
      */
     public function toTicket(Request $request, Warranty $warranty)
     {
+        $this->authorizeWarranty($warranty);
         if (!in_array($warranty->status, ['aktif', 'klaim'])) {
             return back()->with('error', "Garansi #{$warranty->id} berstatus '{$warranty->status}' — hanya garansi aktif/klaim yang bisa dibuatkan tiket.");
         }

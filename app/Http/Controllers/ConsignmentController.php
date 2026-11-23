@@ -85,6 +85,7 @@ class ConsignmentController extends Controller
     {
         $storeId = (int) session('active_store_id');
         abort_if(!$storeId, 422, 'Toko aktif belum dipilih.');
+        \App\Support\PeriodLock::check($storeId, now()->toDateString(), 'Tanggal pencatatan');
 
         $data = $request->validate([
             'supplier_id' => 'nullable|exists:suppliers,id',

@@ -119,7 +119,10 @@ class ReportController extends Controller
             'to' => 'nullable|date_format:Y-m',
         ]);
 
-        $storeId = $request->store_id ?? session('active_store_id') ?? Store::where('is_active', true)->value('id');
+        $canSeeAllStores = in_array(auth()->user()->role ?? '', ['superadmin', 'owner'], true);
+        $storeId = $canSeeAllStores
+            ? ($request->store_id ?? session('active_store_id') ?? Store::where('is_active', true)->value('id'))
+            : (session('active_store_id') ?? auth()->user()->active_store_id);
         $from = $request->from ?? now()->format('Y-m');
         $to = $request->to ?? now()->format('Y-m');
         [$fy, $fm] = explode('-', $from);

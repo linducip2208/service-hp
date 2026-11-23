@@ -60,6 +60,7 @@ class StockController extends Controller
     {
         $this->authorizeInventory();
         $storeId = (int) session('active_store_id');
+        \App\Support\PeriodLock::check($storeId, now()->toDateString(), 'Tanggal opname');
 
         $data = $request->validate([
             'items' => 'required|array|min:1',
@@ -453,6 +454,7 @@ class StockController extends Controller
         ]);
         abort_if((int) $data['to_store_id'] === $fromStore, 422, 'Toko tujuan harus berbeda.');
         abort_if(!$fromStore, 422, 'Toko asal belum dipilih.');
+        \App\Support\PeriodLock::check($fromStore, now()->toDateString(), 'Tanggal mutasi');
         abort_unless(
             Store::whereKey((int) $data['to_store_id'])->where('is_active', true)->exists(),
             422,
