@@ -21,20 +21,20 @@ selaraskan ke token di atas pada Fase 2.
 
 | Fase | Nama | Status | Bukti |
 |---|---|---|---|
-| 1 | Repository discovery (6 dokumen audit) | berjalan (4 agen paralel) | `docs/` |
-| 2 | Design system + dashboard | antre | — |
-| 3 | POS & sales | antre | `tests/Feature/PosE2ETest.php` sudah hijau |
-| 4 | Service center + workflow engine | antre | — |
-| 5 | Inventory & IMEI | antre | — |
-| 6 | Purchasing, HP bekas, tukar tambah | antre | — |
-| 7 | CRM | antre | — |
-| 8 | Teknisi & SDM | antre | — |
-| 9 | Finance & accounting | antre (audit dulu, klaim hati-hati) | — |
-| 10 | Reporting & BI | antre | — |
-| 11 | UI/UX audit semua halaman | antre | — |
-| 12 | Database & security | sebagian (gates + regression ada) | `tests/Feature/SecurityGatesTest.php` |
-| 13 | Testing | berjalan (14 passed / 71 assertions) | `php artisan test` |
-| 14 | Quality gate + 5 dokumen final | antre | — |
+| 1 | Repository discovery (6 dokumen audit) | SELESAI | `docs/` |
+| 2 | Design system + dashboard | SELESAI kode (verifikasi visual browser pending) | sidebar, DashboardService, 8 KPI |
+| 3 | POS & sales | SELESAI inti (E2E hijau; tanpa multi-cart/offline-queue) | `tests/Feature/PosE2ETest.php` |
+| 4 | Service center + workflow engine | SELESAI inti (nextMap + kanban) | `KanbanDevicesTest` |
+| 5 | Inventory & IMEI | SELESAI inti (tanpa multi-gudang formal/reservasi) | `InterconnectTest` 119 rute |
+| 6 | Purchasing, HP bekas, tukar tambah | SELESAI inti (tanpa PO bertingkat/scoring) | gate >Rp10jt teruji |
+| 7 | CRM | SELESAI inti (+perangkat 360; tanpa loyalty/referral) | `KanbanDevicesTest` |
+| 8 | Teknisi & SDM | SELESAI inti (tanpa kanban beban/leaderboard) | report+komisi teruji |
+| 9 | Finance & accounting | SENGAJA single-entry (lihat FINAL_AUDIT) | gates + PeriodLock teruji |
+| 10 | Reporting & BI | SELESAI inti (CSV+filter+drill dasar) | `CrudSmokeTest` |
+| 11 | UI/UX audit semua halaman | BERJALAN (crawler 119 + form 220 + tombol 849) | `InterconnectTest` |
+| 12 | Database & security | SELESAI inti (gates + regression; tanpa 2FA/beban) | `SecurityGatesTest`, `WorkflowGatesTest` |
+| 13 | Testing | SELESAI (31 passed / 160 asersi) | `php artisan test` |
+| 14 | Quality gate + 5 dokumen final | SELESAI | `docs/FINAL_AUDIT.md` dkk |
 
 ## Aturan eksekusi (dari brief, mengikat)
 
