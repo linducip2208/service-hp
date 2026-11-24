@@ -43,6 +43,7 @@ class NavMenu
                 'label' => 'Service Center', 'icon' => 'ti-tool',
                 'items' => [
                     ['label' => 'Tiket Service', 'icon' => 'ti-ticket', 'route' => 'services.index', 'roles' => null, 'match' => ['services.index', 'services.show', 'services.edit', 'services.print'], 'badge' => 'service_ready'],
+                    ['label' => 'Kanban', 'icon' => 'ti-kanban', 'route' => 'services.kanban', 'roles' => null, 'match' => ['services.kanban']],
                     ['label' => 'Terima HP Baru', 'icon' => 'ti-plus', 'route' => 'services.create', 'roles' => $ops, 'match' => ['services.create']],
                     ['label' => 'Laporan Service', 'icon' => 'ti-chart-bar', 'route' => 'services.report', 'roles' => $admin, 'match' => ['services.report']],
                     ['label' => 'Booking Online', 'icon' => 'ti-calendar', 'route' => 'bookings.index', 'roles' => null, 'match' => ['bookings.index', 'bookings.calendar'], 'badge' => 'booking_waiting'],

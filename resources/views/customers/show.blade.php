@@ -297,6 +297,38 @@
         </div>
         <div class="card">
             <div class="card-header">
+                <h3 class="card-title"><i class="ti ti-device-mobile me-1"></i>Perangkat / IMEI ({{ $devices->count() }})</h3>
+                <div class="card-subtitle">Dari tiket service + unit yang dibeli</div>
+            </div>
+            <div class="table-responsive">
+                <table class="table card-table">
+                    <thead>
+                        <tr>
+                            <th>IMEI</th>
+                            <th>Perangkat</th>
+                            <th>Sumber</th>
+                            <th>Ref</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($devices as $d)
+                            <tr>
+                                <td class="font-monospace">{{ $d['imei'] }}</td>
+                                <td>{{ $d['label'] }}</td>
+                                <td><span class="badge bg-{{ $d['source'] === 'pembelian' ? 'green' : 'blue' }}-lt">{{ $d['source'] }}</span></td>
+                                <td class="small text-secondary">{{ $d['ref'] }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-secondary">Belum ada perangkat tercatat.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
                 <h3 class="card-title">Riwayat Service ({{ $services->count() }})</h3>
             </div>
             <div class="table-responsive">

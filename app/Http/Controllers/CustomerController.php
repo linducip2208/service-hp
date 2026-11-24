@@ -263,11 +263,42 @@ class CustomerController extends Controller
         $rfmDaysAgo = $rfmLastDate ? (int) $rfmLastDate->diffInDays(now()) : null;
         $rfmAvg = $rfmCount > 0 ? $totalBelanja / $rfmCount : 0.0;
         $rfmIsDormant = $rfmCount === 0 || ($rfmDaysAgo !== null && $rfmDaysAgo > 90);
+        // Perangkat (IMEI) milik pelanggan: dari tiket service + unit IMEI yang dibeli.
+        // Tanpa migration/route baru — agregat read-only untuk Customer 360.
+        $devices = collect();
+        try {
+            foreach ($services as $t) {
+                if (!empty($t->imei)) {
+                    $devices->push([
+                        'imei' => $t->imei,
+                        'label' => trim(($t->product_brand ?? '') . ' ' . ($t->product_type ?? '')) ?: '—',
+                        'source' => 'service', 'ref' => $t->ticket_no, 'date' => $t->created_at,
+                    ]);
+                }
+            }
+            if (\Schema::hasTable('product_items') && \Schema::hasTable('sale_items') && \Schema::hasTable('sales')) {
+                $rows = \DB::table('product_items')
+                    ->join('sale_items', 'sale_items.product_item_id', '=', 'product_items.id')
+                    ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
+                    ->leftJoin('products', 'products.id', '=', 'product_items.product_id')
+                    ->where('sales.customer_id', $customer->id)
+                    ->whereNotNull('product_items.imei')->where('product_items.imei', '!=', '')
+                    ->select('product_items.imei', 'products.name as product_name', 'sales.invoice_no', 'sales.created_at')
+                    ->orderByDesc('sales.id')->limit(100)->get();
+                foreach ($rows as $r) {
+                    $devices->push([
+                        'imei' => $r->imei, 'label' => $r->product_name ?: '—',
+                        'source' => 'pembelian', 'ref' => $r->invoice_no, 'date' => $r->created_at,
+                    ]);
+                }
+            }
+            $devices = $devices->unique('imei')->values();
+        } catch (\Throwable $e) { $devices = collect(); }
         return view('customers.show', compact(
             'customer', 'sales', 'services', 'totalBelanja',
             'monthlySales', 'monthTotal', 'monthPaid', 'monthRemain', 'monthLabel',
             'fromStr', 'toStr',
-            'rfmCount', 'rfmLastDate', 'rfmDaysAgo', 'rfmAvg', 'rfmIsDormant'
+            'rfmCount', 'rfmLastDate', 'rfmDaysAgo', 'rfmAvg', 'rfmIsDormant', 'devices'
         ));
     }
 

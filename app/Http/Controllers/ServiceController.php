@@ -90,6 +90,25 @@ class ServiceController extends Controller
         $account->save();
     }
 
+    /** Papan Kanban tiket aktif per kolom status (operasional harian).
+     *  Pindah kartu = POST ke updateStatus yang sama (aturan transisi, QC, TTD
+     *  tetap ditegakkan di satu tempat — kanban murni presentasi). */
+    public function kanban(Request $request)
+    {
+        $storeId = $this->storeId();
+        $columns = ['diterima', 'diagnosa', 'menunggu_persetujuan', 'disetujui', 'dikerjakan', 'qc', 'siap_diambil'];
+        $labels = ['diterima' => 'Diterima', 'diagnosa' => 'Diagnosa', 'menunggu_persetujuan' => 'Menunggu Persetujuan', 'disetujui' => 'Disetujui', 'dikerjakan' => 'Dikerjakan', 'qc' => 'QC', 'siap_diambil' => 'Siap Diambil'];
+        $tickets = ServiceTicket::with(['customer', 'technician'])
+            ->where('store_id', $storeId)
+            ->whereIn('status', $columns)
+            ->when($request->filled('technician_id'), fn($q) => $q->where('technician_id', $request->technician_id))
+            ->orderByRaw("CASE priority WHEN 'mendesak' THEN 0 WHEN 'normal' THEN 1 WHEN 'rendah' THEN 2 ELSE 3 END")
+            ->orderBy('created_at')
+            ->limit(300)->get()->groupBy('status');
+        $technicians = LookupCache::technicians();
+        return view('services.kanban', compact('columns', 'labels', 'tickets', 'technicians') + ['nextMap' => $this->nextMap]);
+    }
+
     public function index(Request $request)
     {
         $storeId = $this->storeId();

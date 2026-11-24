@@ -87,6 +87,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/stocks/mutations', [\App\Http\Controllers\StockController::class, 'mutate'])->name('stocks.mutate');
 
     // Service (report + bulk didaftarkan SEBELUM resource agar tak tertabrak {service})
+    // Kanban operasional SEBELUM resource agar tak tertabrak {service}
+    Route::get('/services/kanban', [\App\Http\Controllers\ServiceController::class, 'kanban'])->name('services.kanban');
     Route::get('/services/report', [\App\Http\Controllers\ServiceController::class, 'report'])->name('services.report');
     Route::get('/services/bulk-tickets', [\App\Http\Controllers\ServiceController::class, 'printBulkTickets'])->name('services.bulkTickets');
     Route::post('/services/transfer-selected', [\App\Http\Controllers\ServiceController::class, 'bulkTransferStore'])->name('services.bulkTransfer');
