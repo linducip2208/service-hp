@@ -20,15 +20,15 @@ use Illuminate\Support\Facades\Schema;
  */
 class DashboardService
 {
-    public static function forStore(?int $storeId, ?string $role): array
+    public static function forStore(?int $storeId, ?string $role, ?int $userId = null): array
     {
-        $svc = new self($storeId, $role);
+        $svc = new self($storeId, $role, $userId);
         return $svc->build();
     }
 
     private bool $partial = false;
 
-    public function __construct(private ?int $storeId, private ?string $role) {}
+    public function __construct(private ?int $storeId, private ?string $role, private ?int $userId = null) {}
 
     public function build(): array
     {
@@ -59,6 +59,7 @@ class DashboardService
             'targetWidget' => $this->targetWidget(),
             'annualTarget' => $this->annualTarget(),
             'branchSummary' => $this->branchSummary($today),
+            'myTickets' => $this->myTickets(),
         ];
         $data['partial'] = $this->partial;
 
@@ -361,6 +362,20 @@ class DashboardService
             Log::warning('Dashboard annual gagal: ' . $e->getMessage());
             return null;
         }
+    }
+
+    /** Tiket aktif yang ditugaskan ke teknisi login (panel peran teknisi). */
+    private function myTickets(): mixed
+    {
+        return $this->safe(function () {
+            if ($this->role !== 'teknisi' || !$this->userId || !$this->has('service_tickets')) return collect();
+            return DB::table('service_tickets')
+                ->when($this->storeId, fn($q) => $q->where('store_id', $this->storeId))
+                ->where('technician_id', $this->userId)
+                ->whereNotIn('status', ['diserahkan', 'batal'])
+                ->orderByRaw("CASE WHEN priority = 'mendesak' THEN 0 ELSE 1 END")
+                ->orderBy('created_at')->limit(10)->get();
+        }, collect());
     }
 
     private function branchSummary(string $today): ?array

@@ -3,14 +3,25 @@
 @section('content')
 <div class="page-header d-print-none no-print">
   <div class="row align-items-center">
-    <div class="col"><h2 class="page-title">Dashboard Operasional</h2><div class="text-secondary">Ringkasan toko aktif hari ini — pantau penjualan, service, dan stok sekilas.</div></div>
-    <div class="col-auto ms-auto d-flex flex-wrap gap-2">
+    <div class="col">
+      <h2 class="page-title">Dashboard Operasional</h2>
+      <div class="text-secondary">Ringkasan {{ $targetWidget['store_name'] ?? 'toko aktif' }} hari ini — pantau penjualan, service, dan stok sekilas.</div>
+      @if(!empty($partial))
+        <div class="mt-1"><span class="badge bg-yellow-lt" title="Sebagian widget gagal dimuat (lihat log)"><i class="ti ti-alert-triangle me-1"></i>Sebagian data tidak termuat</span></div>
+      @endif
+    </div>
+    <div class="col-auto ms-auto d-flex flex-wrap gap-2 align-items-center">
+      <span class="text-secondary small d-none d-md-inline">{{ now()->format('d M Y') }}</span>
+      @if(in_array(auth()->user()->role ?? '', ['superadmin','owner','admin','kasir']))
       <a href="{{ route('pos.index') }}" class="btn btn-primary"><i class="ti ti-plus me-1"></i>Transaksi Baru</a>
+      <a href="{{ route('sales.index') }}" class="btn btn-outline-secondary"><i class="ti ti-history me-1"></i>Riwayat</a>
+      @endif
       <a href="{{ route('services.create') }}" class="btn btn-outline-primary"><i class="ti ti-tool me-1"></i>Terima Service</a>
-      <a href="{{ route('activity') }}" class="btn btn-outline-secondary"><i class="ti ti-history me-1"></i>Aktivitas</a>
+      @if(in_array(auth()->user()->role ?? '', ['superadmin','owner','admin','gudang']))
+      <a href="{{ route('stocks.opname') }}" class="btn btn-outline-secondary"><i class="ti ti-clipboard-check me-1"></i>Opname</a>
+      @endif
       @if(in_array(auth()->user()->role ?? '', ['superadmin','owner']))
-      <a href="{{ route('stores.monitor') }}" class="btn btn-outline-success"><i class="ti ti-building me-1"></i>Monitoring</a>
-      <a href="{{ route('health') }}" class="btn btn-outline-danger"><i class="ti ti-heartbeat me-1"></i>Kesehatan Data</a>
+      <a href="{{ route('sales.closing') }}" class="btn btn-outline-warning"><i class="ti ti-lock me-1"></i>Tutup Kasir</a>
       @endif
     </div>
   </div>
@@ -19,67 +30,81 @@
   <div class="col-sm-6 col-lg-3">
     <div class="card corp-kpi">
       <div class="card-body">
-        <div class="corp-kpi-top"><span class="corp-kpi-icon blue"><i class="ti ti-cash"></i></span><span class="corp-kpi-label">Penjualan hari ini</span></div>
-        <div class="corp-kpi-value">
-          Rp {{ number_format($stats['penjualan_hari_ini'] ?? 0,0,',','.') }}
-        </div>
-        <div class="corp-kpi-sub">
-          Kemarin: Rp {{ number_format($stats['penjualan_kemarin'] ?? 0,0,',','.') }}
-        </div>
+        <div class="corp-kpi-top"><span class="corp-kpi-icon blue"><i class="ti ti-cash"></i></span><span class="corp-kpi-label">Omzet hari ini <span class="text-lowercase fw-normal">(invoice)</span></span></div>
+        <div class="corp-kpi-value">Rp {{ number_format($stats['penjualan_hari_ini'] ?? 0,0,',','.') }}</div>
+        <div class="corp-kpi-sub">Kemarin: Rp {{ number_format($stats['penjualan_kemarin'] ?? 0,0,',','.') }}</div>
         <div class="mt-1">
-          @php
-            $diff = $stats['penjualan_diff'] ?? 0;
-            $pct = $stats['penjualan_pct'] ?? null;
-          @endphp
-          @if($diff > 0)
-            <span class="badge bg-green-lt">
-              ▲ +Rp {{ number_format($diff,0,',','.') }}
-              @if(!is_null($pct))
-                (+{{ $pct }}%)
-              @endif
-              vs kemarin
-            </span>
-          @elseif($diff < 0)
-            <span class="badge bg-red-lt">
-              ▼ −Rp {{ number_format(abs($diff),0,',','.') }}
-              @if(!is_null($pct))
-                ({{ $pct }}%)
-              @endif
-              vs kemarin
-            </span>
-          @else
-            <span class="badge bg-secondary-lt">
-              ▬ sama seperti kemarin
-            </span>
-          @endif
+          @php $diff = $stats['penjualan_diff'] ?? 0; $pct = $stats['penjualan_pct'] ?? null; @endphp
+          @if($diff > 0)<span class="badge bg-green-lt">▲ +Rp {{ number_format($diff,0,',','.') }} @if(!is_null($pct))(+{{ $pct }}%)@endif vs kemarin</span>
+          @elseif($diff < 0)<span class="badge bg-red-lt">▼ −Rp {{ number_format(abs($diff),0,',','.') }} @if(!is_null($pct))({{ $pct }}%)@endif vs kemarin</span>
+          @else<span class="badge bg-secondary-lt">▬ sama seperti kemarin</span>@endif
         </div>
       </div>
     </div>
   </div>
-  <div class="col-sm-6 col-lg-3"><div class="card corp-kpi"><div class="card-body"><div class="corp-kpi-top"><span class="corp-kpi-icon green"><i class="ti ti-tool"></i></span><span class="corp-kpi-label">Service aktif</span></div><div class="corp-kpi-value">{{ $stats['service_aktif'] ?? 0 }} <small class="text-secondary fs-6">tiket</small></div><div class="corp-kpi-sub"><a href="{{ route('services.index') }}" class="btn btn-sm btn-ghost-primary mt-1 px-0">Kelola tiket →</a></div></div></div></div>
-  <div class="col-sm-6 col-lg-3"><div class="card corp-kpi"><div class="card-body"><div class="corp-kpi-top"><span class="corp-kpi-icon amber"><i class="ti ti-box"></i></span><span class="corp-kpi-label">Stok menipis</span></div><div class="corp-kpi-value">{{ $stats['stok_menipis'] ?? 0 }} <small class="text-secondary fs-6">produk</small></div><div class="corp-kpi-sub"><a href="{{ route('products.index') }}" class="btn btn-sm btn-ghost-warning mt-1 px-0">Cek stok →</a></div></div></div></div>
-  <div class="col-sm-6 col-lg-3"><div class="card corp-kpi"><div class="card-body"><div class="corp-kpi-top"><span class="corp-kpi-icon slate"><i class="ti ti-wallet"></i></span><span class="corp-kpi-label">Kas masuk bulan ini</span></div><div class="corp-kpi-value">Rp {{ number_format($stats['kas_masuk_bulan'] ?? 0,0,',','.') }}</div><div class="corp-kpi-sub"><a href="{{ route('cash.index') }}" class="btn btn-sm btn-ghost-secondary mt-1 px-0">Lihat arus kas →</a></div></div></div></div>
-</div>
-@if(in_array(auth()->user()->role ?? '', ['superadmin','owner','admin']) && !empty($alerts))
-<div class="card mt-3 border-danger no-print">
-  <div class="card-header bg-red-lt">
-    <h3 class="card-title"><i class="ti ti-alert-triangle me-1"></i>Perlu perhatian ({{ count($alerts) }})</h3>
-    <div class="card-actions">
-      <a
-        href="{{ route('reminders.index') }}"
-        class="btn btn-sm btn-outline-danger"
-      >
-        <i class="ti ti-bell me-1"></i>Buka pusat pengingat
-      </a>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card corp-kpi">
+      <div class="card-body">
+        <div class="corp-kpi-top"><span class="corp-kpi-icon green"><i class="ti ti-receipt"></i></span><span class="corp-kpi-label">Transaksi · profit kotor</span></div>
+        <div class="corp-kpi-value">{{ $stats['trx_hari_ini'] ?? 0 }} <small class="text-secondary fs-6">trx</small></div>
+        <div class="corp-kpi-sub">Profit kotor (produk): <b class="text-success">Rp {{ number_format($stats['profit_kotor_hari_ini'] ?? 0,0,',','.') }}</b></div>
+        <div class="corp-kpi-sub">Kas diterima: Rp {{ number_format($stats['kas_diterima_hari_ini'] ?? 0,0,',','.') }}</div>
+      </div>
     </div>
   </div>
-  <div class="list-group list-group-flush">
-  @foreach($alerts as $a)
-    <a href="{{ $a['url'] }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
-      <span>{{ $a['icon'] }}</span><span>{{ $a['text'] }}</span><span class="ms-auto text-primary">→</span>
-    </a>
-  @endforeach
+  <div class="col-sm-6 col-lg-3">
+    <div class="card corp-kpi">
+      <div class="card-body">
+        <div class="corp-kpi-top"><span class="corp-kpi-icon blue"><i class="ti ti-tool"></i></span><span class="corp-kpi-label">Service aktif</span></div>
+        <div class="corp-kpi-value">{{ $stats['service_aktif'] ?? 0 }} <small class="text-secondary fs-6">tiket</small></div>
+        <div class="corp-kpi-sub">Siap diambil: <b>{{ $stats['siap_diambil'] ?? 0 }}</b> · <a href="{{ route('services.index') }}" class="btn btn-sm btn-ghost-primary mt-1 px-0">Kelola tiket →</a></div>
+      </div>
+    </div>
   </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card corp-kpi">
+      <div class="card-body">
+        <div class="corp-kpi-top"><span class="corp-kpi-icon amber"><i class="ti ti-box"></i></span><span class="corp-kpi-label">Stok menipis · piutang</span></div>
+        <div class="corp-kpi-value">{{ $stats['stok_menipis'] ?? 0 }} <small class="text-secondary fs-6">produk</small></div>
+        <div class="corp-kpi-sub">Piutang outstanding: <b class="text-danger">Rp {{ number_format($stats['piutang_outstanding'] ?? 0,0,',','.') }}</b></div>
+        <div class="corp-kpi-sub">Pelanggan baru 30h: {{ $stats['pelanggan_baru_30h'] ?? 0 }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+@if((auth()->user()->role ?? '') === 'teknisi' && !empty($myTickets) && $myTickets->count())
+<div class="card mt-3 border-primary">
+  <div class="card-header"><h3 class="card-title"><i class="ti ti-user-cog me-1"></i>Tiket saya ({{ $myTickets->count() }})</h3></div>
+  <div class="table-responsive"><table class="table table-sm card-table mb-0"><thead><tr><th>Tiket</th><th>Device</th><th>Status</th><th>Prioritas</th><th></th></tr></thead>
+  <tbody>@foreach($myTickets as $t)<tr class="{{ ($t->priority ?? '')==='mendesak' ? 'table-danger' : '' }}"><td class="font-monospace">{{ $t->ticket_no }}</td><td>{{ $t->product_brand }} {{ $t->product_type }}</td><td><span class="badge bg-blue-lt">{{ $t->status }}</span></td><td>@if(($t->priority ?? '')==='mendesak')<span class="badge bg-red-lt">mendesak</span>@else<span class="text-secondary">{{ $t->priority ?? '-' }}</span>@endif</td><td class="text-end"><a href="{{ route('services.show', $t->id) }}" class="btn btn-sm btn-ghost-primary">Kerjakan →</a></td></tr>@endforeach</tbody></table></div>
+</div>
+@endif
+@if(in_array(auth()->user()->role ?? '', ['superadmin','owner','admin']) && !empty($alerts))
+@php
+  $alertGroups = ['mendesak' => ['label' => 'Mendesak — tangani sekarang', 'cls' => 'red'], 'hari_ini' => ['label' => 'Hari ini', 'cls' => 'orange'], 'rutin' => ['label' => 'Rutin dipantau', 'cls' => 'yellow']];
+  $alertByLevel = collect($alerts)->groupBy(fn($a) => $a['level'] ?? 'rutin');
+@endphp
+<div class="card mt-3 no-print">
+  <div class="card-header">
+    <h3 class="card-title"><i class="ti ti-alert-triangle me-1"></i>Perlu perhatian ({{ count($alerts) }})</h3>
+    <div class="card-actions">
+      <a href="{{ route('reminders.index') }}" class="btn btn-sm btn-outline-primary"><i class="ti ti-bell me-1"></i>Pusat pengingat</a>
+    </div>
+  </div>
+  @foreach($alertGroups as $lvl => $meta)
+    @if(!empty($alertByLevel[$lvl]) && count($alertByLevel[$lvl]))
+    <div class="card-body py-2 border-bottom">
+      <span class="badge bg-{{ $meta['cls'] }}-lt">{{ $meta['label'] }} ({{ count($alertByLevel[$lvl]) }})</span>
+    </div>
+    <div class="list-group list-group-flush">
+    @foreach($alertByLevel[$lvl] as $a)
+      <a href="{{ $a['url'] }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <i class="ti {{ $a['icon'] ?? 'ti-alert-circle' }} text-{{ $meta['cls'] === 'orange' ? 'warning' : $meta['cls'] }}"></i><span>{{ $a['text'] }}</span><span class="ms-auto text-primary">→</span>
+      </a>
+    @endforeach
+    </div>
+    @endif
+  @endforeach
 </div>
 @endif
 @if(!empty($targetWidget))
@@ -456,19 +481,27 @@
     </tbody></table></div></div></div>
 </div>
 <div class="row row-cards mt-3">
-  <div class="col-lg-8"><div class="card"><div class="card-header"><h3 class="card-title">Omzet 30 Hari</h3></div>
+  <div class="col-lg-6"><div class="card"><div class="card-header"><h3 class="card-title">Tren Omzet — 30 Hari</h3><div class="card-subtitle">Total invoice per hari</div></div>
     <div class="card-body"><canvas id="ch-rev" height="120"></canvas></div></div></div>
-  <div class="col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">Metode Bayar Bulan Ini</h3></div>
-    <div class="card-body"><canvas id="ch-pay" height="200"></canvas>
-    @if(empty($payLabels))<div class="text-secondary text-center small mt-2">Belum ada pembayaran bulan ini.</div>@endif</div></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-header"><h3 class="card-title">Tren Profit Kotor — 30 Hari</h3><div class="card-subtitle">Margin produk per hari (jasa belum termasuk)</div></div>
+    <div class="card-body"><canvas id="ch-profit" height="120"></canvas></div></div></div>
 </div>
 <div class="row row-cards mt-3">
+  <div class="col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">Metode Bayar Bulan Ini</h3><div class="card-subtitle">Kas benar-benar diterima</div></div>
+    <div class="card-body"><canvas id="ch-pay" height="200"></canvas>
+    @if(empty($payLabels))<div class="text-secondary text-center small mt-2">Belum ada pembayaran bulan ini.</div>@endif</div></div></div>
   <div class="col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">Top 5 Produk Terlaris (30 hari)</h3></div>
     <div class="table-responsive"><table class="table table-sm card-table mb-0"><thead><tr><th>Produk</th><th class="text-end">Qty</th><th class="text-end">Omzet</th></tr></thead>
     <tbody>@forelse($topProducts as $t)<tr><td>{{ $t->name }}</td><td class="text-end">{{ $t->qty }}</td><td class="text-end">Rp {{ number_format($t->omzet,0,',','.') }}</td></tr>
     @empty<tr><td colspan="3" class="text-center text-secondary">Belum ada penjualan.</td></tr>@endforelse</tbody></table></div></div></div>
-  <div class="col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">Status Service</h3></div><div class="card-body">
-    @forelse($serviceByStatus as $st => $c)<span class="badge bg-blue-lt me-1 mb-1">{{ $st }}: {{ $c }}</span>
+  <div class="col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">Alur Service Operasional</h3><div class="card-subtitle">{{ $serviceOps['active'] ?? 0 }} tiket aktif</div></div><div class="card-body">
+    @php $flowLabels = ['diterima'=>'Diterima','diagnosa'=>'Diagnosa','menunggu_persetujuan'=>'Menunggu Persetujuan','disetujui'=>'Disetujui','dikerjakan'=>'Dikerjakan','qc'=>'QC','siap_diambil'=>'Siap Diambil','diserahkan'=>'Diserahkan','batal'=>'Batal']; @endphp
+    @forelse(($serviceOps['counts'] ?? []) as $st => $c)
+      <a href="{{ route('services.index') }}" class="d-flex align-items-center gap-2 py-1 text-decoration-none text-reset">
+        <span class="badge bg-{{ in_array($st,['siap_diambil'])?'green':(in_array($st,['diserahkan'])?'secondary':(in_array($st,['batal'])?'dark':'blue')) }}-lt" style="min-width:34px">{{ $c }}</span>
+        <span>{{ $flowLabels[$st] ?? $st }}</span>
+        @if($st==='siap_diambil' && $c>0)<span class="ms-auto badge bg-green-lt">ambil!</span>@endif
+      </a>
     @empty<span class="text-secondary">Belum ada tiket.</span>@endforelse
     <div class="mt-2"><a href="{{ route('services.index') }}" class="btn btn-sm btn-ghost-primary">Kelola service →</a></div></div></div></div>
   <div class="col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">Stok Menipis</h3></div>
@@ -476,6 +509,13 @@
     <tbody>@forelse($lowStocks as $l)<tr><td>{{ $l->name }}<div class="small text-secondary">min {{ $l->min_stock }}</div></td><td class="text-end"><span class="badge bg-{{ $l->qty<=0?'red':'yellow' }}-lt">{{ $l->qty }}</span></td></tr>
     @empty<tr><td colspan="2" class="text-center text-secondary">Stok aman.</td></tr>@endforelse</tbody></table></div></div></div>
 </div>
+@if(in_array(auth()->user()->role ?? '', ['superadmin','owner']) && !empty($branchSummary))
+<div class="card mt-3">
+  <div class="card-header"><h3 class="card-title"><i class="ti ti-building me-1"></i>Semua Cabang Hari Ini</h3><div class="card-actions"><a href="{{ route('stores.monitor') }}" class="btn btn-sm btn-ghost-primary">Monitoring pusat →</a></div></div>
+  <div class="table-responsive"><table class="table table-sm card-table mb-0"><thead><tr><th>Cabang</th><th class="text-end">Omzet</th><th class="text-end">Trx</th><th class="text-end">Service aktif</th><th class="text-end">Stok kritis</th></tr></thead>
+  <tbody>@foreach($branchSummary as $b)<tr><td>{{ $b['store']->name }}</td><td class="text-end">Rp {{ number_format($b['omzet'],0,',','.') }}</td><td class="text-end">{{ $b['trx'] }}</td><td class="text-end">{{ $b['service_aktif'] }}</td><td class="text-end">@if($b['stok_kritis']>0)<span class="badge bg-red-lt">{{ $b['stok_kritis'] }}</span>@else<span class="text-secondary">0</span>@endif</td></tr>@endforeach</tbody></table></div>
+</div>
+@endif
 @if($pendingBookings->count())
 <div class="card mt-3"><div class="card-header"><h3 class="card-title"> Booking Menunggu Konfirmasi ({{ $pendingBookings->count() }})</h3></div>
   <div class="table-responsive"><table class="table table-sm card-table mb-0"><thead><tr><th>Kode</th><th>Pelanggan</th><th>Device</th><th>Jadwal</th><th>Status</th></tr></thead>
@@ -491,11 +531,14 @@
 <script>
 (function(){
   if(typeof Chart === 'undefined') return;
+  const rp = v => 'Rp '+Number(v).toLocaleString('id-ID');
   const rev = document.getElementById('ch-rev');
-  if(rev) new Chart(rev, {type:'line', data:{labels:@json($revLabels ?? []), datasets:[{label:'Omzet (Rp)', data:@json($revData ?? []), borderColor:'#206bc4', backgroundColor:'rgba(32,107,196,.12)', fill:true, tension:.3}]}, options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'Rp '+Number(v).toLocaleString('id-ID')}}}}});
+  if(rev) new Chart(rev, {type:'line', data:{labels:@json($revLabels ?? []), datasets:[{label:'Omzet (Rp)', data:@json($revData ?? []), borderColor:'#1769f5', backgroundColor:'rgba(23,105,245,.12)', fill:true, tension:.3}]}, options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:rp}}}}});
+  const prf = document.getElementById('ch-profit');
+  if(prf) new Chart(prf, {type:'bar', data:{labels:@json($trends['labels'] ?? $revLabels ?? []), datasets:[{label:'Profit kotor (Rp)', data:@json($trends['profit'] ?? []), backgroundColor:'#16a36a'}]}, options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:rp}}}}});
   const pay = document.getElementById('ch-pay');
   const pl = @json($payLabels ?? []);
-  if(pay && pl.length) new Chart(pay, {type:'doughnut', data:{labels:pl, datasets:[{data:@json($payData ?? []), backgroundColor:['#206bc4','#2fb344','#e74c3c','#f5c518','#6c757d']}]}, options:{plugins:{legend:{position:'bottom'}}}});
+  if(pay && pl.length) new Chart(pay, {type:'doughnut', data:{labels:pl, datasets:[{data:@json($payData ?? []), backgroundColor:['#1769f5','#16a36a','#e74c3c','#f59e0b','#6c757d']}]}, options:{plugins:{legend:{position:'bottom'}}}});
 })();
 </script>
 @endpush

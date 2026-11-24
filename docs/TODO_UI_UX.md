@@ -24,13 +24,15 @@ Legenda: `[ ]` belum, `[x]` selesai. Target: tiap halaman index ikut pola KORPOR
 - [ ] Aksi baris: dropdown; pagination tunggal.
 - [ ] Empty state: ikon + kalimat aksi + tombol.
 
-## P2 — Sidebar/topbar baru (Fase 2, berjalan)
+## P2 — Sidebar/topbar baru (Fase 2, selesai di kode)
 - [x] Grup aktivitas bisnis + role.
 - [x] Badge tertunda (booking, siap diambil, stok kritis, hutang ≤7h).
 - [x] Cari menu, favorit, terakhir dibuka, ingat grup, mini-mode, Ctrl+K.
-- [ ] Uji mobile drawer + dark mode sidebar.
+- [x] Toast auto-dismiss gantikan flash statis.
+- [ ] Uji mobile drawer + dark mode sidebar (butuh device asli).
 
-## P3 — Dashboard (Fase 2, berjalan)
+## P3 — Dashboard (Fase 2, selesai di kode)
 - [x] Service data terpusat (`DashboardService`) + log warning (tidak ditelan).
-- [ ] 8 KPI informatif + tren omzet vs profit terpisah + panel status operasional.
-- [ ] Peringatan berlapis urgensi + quick action + seksi per peran + ringkasan cabang.
+- [x] 8 KPI informatif + tren omzet vs profit terpisah + panel status operasional.
+- [x] Peringatan berlapis urgensi + quick action per peran + seksi teknisi + ringkasan cabang.
+- [x] Definisi bisnis eksplisit (omzet invoice vs kas diterima vs profit produk).

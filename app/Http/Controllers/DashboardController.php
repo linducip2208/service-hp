@@ -12,7 +12,7 @@ class DashboardController extends Controller
         $storeId = session('active_store_id') ?? auth()->user()->active_store_id ?? null;
         $role = auth()->user()->role ?? null;
 
-        $data = \App\Services\Dashboard\DashboardService::forStore($storeId ? (int) $storeId : null, $role);
+        $data = \App\Services\Dashboard\DashboardService::forStore($storeId ? (int) $storeId : null, $role, auth()->id());
 
         return view('dashboard', $data);
     }
