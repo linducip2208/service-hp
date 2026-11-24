@@ -232,7 +232,7 @@ Kesimpulan: {!! $masihBerlaku?'<span class="badge bg-green-lt">MASIH BERLAKU</sp
 </div>
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart/chart.umd.min.js"></script>
 <script>
 try {
     const rp = (v) => 'Rp ' + Number(v || 0).toLocaleString('id-ID');
@@ -296,7 +296,7 @@ try {
 </script>
 @endpush
 @push('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="/vendor/qrcode/qrcode.min.js"></script>
 <script>
 (function () {
     // QR kode promo: payload = kode promo mentah, supaya hasil scan

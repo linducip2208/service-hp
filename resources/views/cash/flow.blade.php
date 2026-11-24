@@ -337,7 +337,7 @@
     </div>
 
     @push('js')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script src="/vendor/chart/chart.umd.min.js"></script>
         <script>
             try {
                 const rp = (v) => 'Rp ' + Number(v || 0).toLocaleString('id-ID');
@@ -581,7 +581,7 @@
     </div>
 
     @push('js')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script src="/vendor/chart/chart.umd.min.js"></script>
         <script>
             try {
                 const rp = (v) => 'Rp ' + Number(v || 0).toLocaleString('id-ID');

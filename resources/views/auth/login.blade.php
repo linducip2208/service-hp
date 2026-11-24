@@ -6,11 +6,10 @@
   <title>Login — ServiceHP</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" rel="stylesheet"/>
+      <link href="/vendor/fonts/fonts.css" rel="stylesheet">
+<link href="/vendor/fonts/fonts.css" rel="stylesheet">
+  <link href="/vendor/tabler/tabler.min.css" rel="stylesheet"/>
+  <link href="/vendor/icons/tabler-icons.min.css" rel="stylesheet"/>
   <link href="/css/corporate.css" rel="stylesheet"/>
 </head>
 <body>

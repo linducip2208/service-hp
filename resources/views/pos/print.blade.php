@@ -203,8 +203,8 @@ $__noteBersih = trim((string) preg_replace('/\s*\[(?:VOID|UCAPAN|SIG)[^\]]*\]/',
 @php($hasCash = strtoupper($sale->payment_method ?? '') === 'TUNAI' || ($sale->payments ?? collect())->contains(fn($p) => strtolower($p->method ?? '') === 'tunai'))
 @endsection
 @push('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="/vendor/html2canvas/html2canvas.min.js"></script>
+<script src="/vendor/qrcode/qrcode.min.js"></script>
 <script src="{{ asset('js/printer.js') }}"></script>
 <script>
 (function(){

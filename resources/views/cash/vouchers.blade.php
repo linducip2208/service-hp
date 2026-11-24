@@ -9,7 +9,7 @@
 <title>
   Cetak Voucher Kas Massal ({{ $transactions->count() }} voucher) — {{ $store->name ?? 'ServiceHP' }}
 </title>
-<link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
+<link href="/vendor/tabler/tabler.min.css" rel="stylesheet">
 <style>
   .voucher-box {
     max-width: 210mm;

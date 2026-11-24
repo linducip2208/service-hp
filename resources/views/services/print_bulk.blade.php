@@ -6,8 +6,8 @@
 <title>
   Cetak Tiket Massal ({{ $tickets->count() }} tiket) — ServiceHP
 </title>
-<link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<link href="/vendor/tabler/tabler.min.css" rel="stylesheet">
+<script src="/vendor/jsbarcode/JsBarcode.all.min.js"></script>
 <style>
   .bulk-box {
     max-width: 210mm;

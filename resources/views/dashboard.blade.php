@@ -527,7 +527,7 @@
   <ol class="mb-0"><li>HP diterima (input pelanggan, tipe, IMEI, keluhan, foto)</li><li>Diagnosa teknisi + estimasi</li><li>Persetujuan pelanggan (WA)</li><li>Pengerjaan + sparepart</li><li>QC → Siap diambil (notif WA) → Serah terima + garansi</li></ol>
 </div></div>
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart/chart.umd.min.js"></script>
 <script>
 (function(){
   if(typeof Chart === 'undefined') return;

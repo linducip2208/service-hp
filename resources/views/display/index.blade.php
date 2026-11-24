@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="refresh" content="30" />
   <title>Layar Antrean Service — {{ $activeStore->name ?? 'Semua Toko' }}</title>
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet" />
+  <link href="/vendor/tabler/tabler.min.css" rel="stylesheet" />
   <style>
     body {
       background: #0b1220;

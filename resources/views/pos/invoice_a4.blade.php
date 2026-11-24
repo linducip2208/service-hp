@@ -1,5 +1,5 @@
 <!doctype html><html lang="id"><head><meta charset="utf-8"><title>Invoice {{ $sale->invoice_no }} — ServiceHP</title>
-<link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
+<link href="/vendor/tabler/tabler.min.css" rel="stylesheet">
 <style>
   .invoice-box{max-width:210mm;margin:auto;background:#fff;color:#000}
   @media print{ .no-print{display:none!important} body{background:#fff} .invoice-box{max-width:100%} @page{size:A4;margin:12mm} }
@@ -41,7 +41,7 @@
     <a class="btn btn-outline-secondary" href="{{ route('pos.print', $sale) }}">Kembali ke struk</a>
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="/vendor/qrcode/qrcode.min.js"></script>
 <script>
 // QR info pembayaran (bukan QRIS dinamis): payload teks SERVICEHP|invoice|total.
 // Bila CDN qrcodejs gagal, teks payload tetap tampil sebagai fallback.

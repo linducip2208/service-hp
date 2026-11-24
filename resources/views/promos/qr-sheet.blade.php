@@ -250,7 +250,7 @@
     @endif
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="/vendor/qrcode/qrcode.min.js"></script>
 <script>
 (function () {
     // Pola yang sama dengan promos/show: payload = kode promo mentah,

@@ -313,7 +313,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="/vendor/jsbarcode/JsBarcode.all.min.js"></script>
 <script>
     (function () {
         try {

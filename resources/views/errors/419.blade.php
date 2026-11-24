@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sesi Kedaluwarsa — ServiceHP</title>
     <link
-        href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css"
+        href="/vendor/tabler/tabler.min.css"
         rel="stylesheet"
     />
 </head>

@@ -646,7 +646,7 @@
 })();
 </script>
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart/chart.umd.min.js"></script>
 <script>
 try {
     var masterEl = document.getElementById('chartMasterGrowth');

@@ -137,7 +137,7 @@
 <p class="text-secondary small mt-2">Dicetak: {{ now()->format('d/m/Y H:i') }} — ServiceHP Monitoring Pusat.</p>
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart/chart.umd.min.js"></script>
 <script>
 (function() {
   var el = document.getElementById('chartTargetTahun');

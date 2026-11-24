@@ -732,7 +732,7 @@ document.getElementById('dueDateSelectedBtn')?.addEventListener('click', functio
 });
 </script>
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart/chart.umd.min.js"></script>
 <script>
 try {
     const rpAging = (v) => 'Rp ' + Number(v || 0).toLocaleString('id-ID');

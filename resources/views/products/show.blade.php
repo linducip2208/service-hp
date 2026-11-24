@@ -8,7 +8,7 @@
 <div class="col-lg-5"><div class="card"><div class="card-body text-center">
 @if($product->photo)<img src="{{ asset('storage/'.$product->photo) }}" class="img-fluid rounded mb-2" style="max-height:240px">@else<div class="text-secondary py-4">Tidak ada foto</div>@endif
 <div><svg id="barcode"></svg><div class="font-monospace small">{{ $product->barcode }}</div></div>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="/vendor/jsbarcode/JsBarcode.all.min.js"></script>
 <script>JsBarcode("#barcode", @json($product->barcode ?: $product->sku), {format:"CODE128", height:50, displayValue:false});</script>
 </div>
 <div class="card-body border-top"><dl class="row mb-0">
@@ -62,7 +62,7 @@
 <div id="labelSheet" class="d-none"><div id="labelGrid" class="label-grid"></div></div>
 <style>@media print{body *{visibility:hidden}#labelSheet,#labelSheet *{visibility:visible}#labelSheet{display:block!important;position:absolute;inset:0}.no-print,.page-header,.card{display:none!important}#labelSheet.card{display:block!important}.label-grid{display:grid!important;grid-template-columns:1fr 1fr 1fr;gap:8mm;padding:10mm}.label-cell{border:1px dashed #888;padding:4mm;text-align:center;page-break-inside:avoid}}</style>
 <style>.label-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.label-cell{border:1px dashed #aaa;padding:6px;text-align:center}</style>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="/vendor/jsbarcode/JsBarcode.all.min.js"></script>
 <script>
 const P_NAME = @json($product->name), P_PRICE = {!! \Illuminate\Support\Js::from('Rp ' . number_format($product->selling_price,0,',','.')) !!}, P_CODE = @json($product->barcode ?: $product->sku);
 function cetakLabel(){

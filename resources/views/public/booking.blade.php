@@ -1,4 +1,4 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Booking Service — ServiceHP</title><link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet"/></head>
+<!doctype html><html lang="id"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Booking Service — ServiceHP</title><link href="/vendor/tabler/tabler.min.css" rel="stylesheet"/></head>
 <body class="d-flex flex-column"><div class="page page-center"><div class="container container-tight py-4">
 <div class="text-center mb-4"><h1><i class="ti ti-calendar me-1"></i> Booking Service</h1></div>
 <div class="card"><div class="card-body">

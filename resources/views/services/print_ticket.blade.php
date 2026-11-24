@@ -1,6 +1,6 @@
 <!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tanda Terima {{ $service->ticket_no }} — ServiceHP</title>
-<link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<link href="/vendor/tabler/tabler.min.css" rel="stylesheet">
+<script src="/vendor/jsbarcode/JsBarcode.all.min.js"></script>
 <style>
   .ticket-box{max-width:480px;margin:auto;background:#fff;color:#000}
   @media print{
@@ -108,7 +108,7 @@
   </div>
 </div>
 <script id="receipt-data" type="application/json">{"type":"service","store":{"name":@json($service->store->name ?? 'ServiceHP'),"phone":@json($service->store->phone ?? '')},"ticket":@json($service->ticket_no),"datetime":@json($service->created_at->format('d/m/Y H:i')),"customer":@json(trim(($service->customer->name ?? '-').' '.($service->customer->phone ?? ''))),"device":@json(trim(($service->product_brand ?? '').' '.($service->product_type ?? ''))),"imei":@json($service->imei),"complaint":@json($service->complaint),"condition":@json($service->condition_note),"estimate":{{ (float)$service->estimate_cost }},"dp":{{ (float)$service->dp }},"status":@json($service->status),"track_url":@json(url('/track').'?no='.$service->ticket_no)}</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="/vendor/html2canvas/html2canvas.min.js"></script>
 <script src="{{ asset('js/printer.js') }}"></script>
 <script>
 try{JsBarcode("#barcode",@json($service->ticket_no),{format:"CODE128",height:50,width:1.4,fontSize:12});}catch(e){}

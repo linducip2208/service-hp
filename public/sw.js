@@ -13,8 +13,8 @@
  *  - Update: skipWaiting() saat install + clients.claim() saat activate +
  *    listener pesan 'SKIP_WAITING' agar halaman bisa memicu update manual.
  */
-var STATIC_V = 'servicehp-static-v3';
-var CDN_V = 'servicehp-cdn-v3';
+var STATIC_V = 'servicehp-static-v4';
+var CDN_V = 'servicehp-cdn-v4';
 var OFFLINE_URL = '/offline.html';
 
 /* Aset lokal kecil yang wajib ada — gagal satu = install gagal (disengaja,
@@ -24,6 +24,10 @@ var CORE_ASSETS = [
   '/manifest.webmanifest',
   '/js/printer.js',
   '/css/corporate.css',
+  '/vendor/fonts/fonts.css',
+  '/vendor/tabler/tabler.min.css',
+  '/vendor/tabler/tabler.min.js',
+  '/vendor/icons/tabler-icons.min.css',
   '/icons/icon.svg',
   '/icons/icon-192.png',
   '/icons/icon-512.png',

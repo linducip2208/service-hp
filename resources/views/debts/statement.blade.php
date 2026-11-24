@@ -9,7 +9,7 @@
   $nomor = $prefix . '-' . str_pad($debt->id, 6, '0', STR_PAD_LEFT);
 @endphp
 <title>{{ $judul }} #{{ $debt->id }} — {{ $store->name ?? 'ServiceHP' }}</title>
-<link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
+<link href="/vendor/tabler/tabler.min.css" rel="stylesheet">
 <style>
   .letter-box { max-width: 210mm; margin: auto; background: #fff; color: #000; }
   @media print {

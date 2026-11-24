@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Slip Komisi {{ $tech->name }} — {{ $bulan }}</title>
-<link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
+<link href="/vendor/tabler/tabler.min.css" rel="stylesheet">
 <style>
   .letter-box { max-width: 210mm; margin: auto; background: #fff; color: #000; }
   @media print {

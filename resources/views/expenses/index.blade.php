@@ -793,7 +793,7 @@
     </div>
 </div>
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/vendor/chart/chart.umd.min.js"></script>
 <script>try{
 const ec=document.getElementById('chartExpense');
 if(ec) new Chart(ec,{type:'doughnut',data:{labels:@json($perCategory->pluck('category')),datasets:[{data:@json($perCategory->pluck('total')->map(fn($v)=>(float)$v)),backgroundColor:['#206bc4','#79a6dc','#e74c3c','#f59f00','#2fb344','#5b5bd6','#e83e8c','#6c757d','#20c997','#fd7e14']}]},options:{plugins:{legend:{position:'bottom'}}}});

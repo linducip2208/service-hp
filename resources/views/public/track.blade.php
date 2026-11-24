@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lacak Service — ServiceHP</title>
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet" />
+  <link href="/vendor/tabler/tabler.min.css" rel="stylesheet" />
 </head>
 <body class="d-flex flex-column">
   <div class="page page-center">
